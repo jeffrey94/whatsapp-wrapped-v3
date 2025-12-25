@@ -5,12 +5,14 @@ export const generateAIInsights = async (
   analytics: ChatAnalytics,
   messages: Message[]
 ): Promise<AIGeneratedContent | null> => {
-  if (!process.env.API_KEY) {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+  if (!apiKey) {
     console.warn("No API Key provided for Gemini");
     return null;
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   // 1. Context Preparation
   const topParticipants = analytics.participants.slice(0, 5).map(p => ({
