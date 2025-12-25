@@ -551,44 +551,7 @@ export const WrappedView: React.FC<WrappedViewProps> = ({ data, onReset }) => {
                             </div>
                         )}
 
-                        {/* Share Current Slide */}
-                        <button
-                            onClick={handleShare}
-                            disabled={isCapturing}
-                            className="w-full glass rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50"
-                        >
-                            <Share2 size={20} />
-                            <div>
-                                <div className="font-bold">Share This Slide</div>
-                                <div className="text-xs text-white/50">Save or share current slide</div>
-                            </div>
-                        </button>
 
-                        {/* Download All */}
-                        <button
-                            onClick={handleDownloadAll}
-                            disabled={isExporting}
-                            className="w-full glass rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50"
-                        >
-                            <Package size={20} />
-                            <div>
-                                <div className="font-bold">Download All (ZIP)</div>
-                                <div className="text-xs text-white/50">Get all slides as images</div>
-                            </div>
-                        </button>
-
-                        {/* Export PPT */}
-                        <button
-                            onClick={handleExportPPT}
-                            disabled={isExporting}
-                            className="w-full glass rounded-2xl p-4 flex items-center gap-4 text-left hover:bg-white/10 transition-colors disabled:opacity-50"
-                        >
-                            <Presentation size={20} />
-                            <div>
-                                <div className="font-bold">Export Presentation</div>
-                                <div className="text-xs text-white/50">Create PowerPoint file</div>
-                            </div>
-                        </button>
 
                         {/* Export JSON */}
                         <button
