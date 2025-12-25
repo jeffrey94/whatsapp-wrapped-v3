@@ -429,10 +429,7 @@ export const WrappedView: React.FC<WrappedViewProps> = ({ data, onReset }) => {
                     ))}
                 </div>
 
-                {/* Slide counter */}
-                <div className="text-center text-[10px] text-white/40 mt-2">
-                    {currentSlide + 1} / {slides.length}
-                </div>
+
             </div>
 
             {/* Top Controls */}
