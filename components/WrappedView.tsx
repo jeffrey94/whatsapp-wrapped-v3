@@ -101,7 +101,7 @@ export const WrappedView: React.FC<WrappedViewProps> = ({ data, onReset }) => {
 
         // Badges (chunked)
         const badges = data.aiContent?.badges || [];
-        const badgeChunks = chunk(badges, 3);
+        const badgeChunks = chunk(badges, 2);
         if (badgeChunks.length > 0) {
             badgeChunks.forEach((chunk, i) => {
                 slideList.push({
