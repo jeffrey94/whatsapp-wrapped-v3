@@ -1,8 +1,11 @@
 {
-  "name": "whatsapp-wrapped-(shorter)",
+  "name": "whatsapp-wrapped-v3",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
