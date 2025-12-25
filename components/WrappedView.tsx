@@ -62,12 +62,12 @@ export const WrappedView: React.FC<WrappedViewProps> = ({ data, onReset }) => {
         slideList.push({ component: <VocabularySlide key="vocab" data={data} />, title: "Vocabulary" });
         slideList.push({ component: <ActivitySlide key="activity" data={data} />, title: "Activity" });
 
-        // Personal Stats (chunked - max 3 per slide for mobile)
+        // Personal Stats (chunked - max 2 per slide for mobile)
         const participants = data.analytics.participants.slice(0, 6); // Top 6 max
-        const participantChunks = chunk(participants, 3);
+        const participantChunks = chunk(participants, 2);
         participantChunks.forEach((pChunk, i) => {
             slideList.push({
-                component: <PersonalStatsSlide key={`stats-${i}`} data={data} items={pChunk} startRank={i * 3} />,
+                component: <PersonalStatsSlide key={`stats-${i}`} data={data} items={pChunk} startRank={i * 2} />,
                 title: i === 0 ? "Top Chatters" : `Rankings ${i + 1}`
             });
         });
