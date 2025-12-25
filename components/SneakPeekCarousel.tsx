@@ -33,7 +33,7 @@ const SATIRE_CONTENT = [
     color: "text-red-400",
     bg: "bg-red-900/40 border-red-500/30"
   },
-  
+
   // Stats & Metrics
   {
     icon: Heart,
@@ -111,28 +111,59 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
   const generateRandomPosition = () => {
     const rotation = randomInt(-12, 12);
     const scale = 0.9 + Math.random() * 0.15; // 0.9 to 1.05
-    
-    // Define "Safe Zones" percentages to avoid the center upload box
-    // Center is roughly 30% to 70% width and 30% to 70% height
-    let pos: WidgetStyle = { 
-        transform: `rotate(${rotation}deg) scale(${scale})` 
+
+    // Check if mobile (approximate)
+    const isMobile = window.innerWidth < 768;
+
+    let pos: WidgetStyle = {
+      transform: `rotate(${rotation}deg) scale(${scale})`
     };
 
-    const hOffset = randomInt(5, 20); // 5% to 20% from edge
-    const vOffset = randomInt(10, 35); // 10% to 35% from top/bottom
+    if (isMobile) {
+      // Mobile Logic: Push strict to top/bottom edges to leave center clear
+      // Center "safe zone" is roughly 25% to 75% height.
+      // We put widgets in 5-20% from top or 5-20% from bottom.
 
-    if (quadrant === 'TL') {
+      // Mobile side padding
+      const hOffset = randomInt(2, 5); // Stick close to edges
+
+      if (quadrant === 'TL' || quadrant === 'TR') {
+        // Top quadrants -> Top strip
+        const vOffset = randomInt(8, 18);
+        pos.top = `${vOffset}%`;
+
+        // Randomize horizontal but keep clear of very center if possible, 
+        // though with full width widgets on mobile, they just need to not overlap vertically.
+        // Actually on mobile, we might center them horizontally or stagger slightly.
+        if (quadrant === 'TL') pos.left = `${hOffset}%`;
+        else pos.right = `${hOffset}%`;
+
+      } else {
+        // Bottom quadrants -> Bottom strip
+        const vOffset = randomInt(8, 18);
+        pos.bottom = `${vOffset}%`;
+
+        if (quadrant === 'BL') pos.left = `${hOffset}%`;
+        else pos.right = `${hOffset}%`;
+      }
+    } else {
+      // Desktop Logic: Standard spread
+      const hOffset = randomInt(5, 20);
+      const vOffset = randomInt(10, 35);
+
+      if (quadrant === 'TL') {
         pos.top = `${vOffset}%`;
         pos.left = `${hOffset}%`;
-    } else if (quadrant === 'TR') {
+      } else if (quadrant === 'TR') {
         pos.top = `${vOffset}%`;
         pos.right = `${hOffset}%`;
-    } else if (quadrant === 'BL') {
+      } else if (quadrant === 'BL') {
         pos.bottom = `${vOffset}%`;
         pos.left = `${hOffset}%`;
-    } else if (quadrant === 'BR') {
+      } else if (quadrant === 'BR') {
         pos.bottom = `${vOffset}%`;
         pos.right = `${hOffset}%`;
+      }
     }
 
     return pos;
@@ -140,15 +171,15 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
-    
+
     // Initial start delay
     const startTimeout = setTimeout(() => {
-      
+
       const cycle = () => {
         // 1. Prepare new content and position while invisible
         setContent(randomItem(SATIRE_CONTENT));
         setStyle(generateRandomPosition());
-        
+
         // 2. Make visible
         setVisible(true);
 
@@ -156,9 +187,9 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
         const displayDuration = randomInt(4000, 6000);
         timeoutId = setTimeout(() => {
           setVisible(false);
-          
+
           // 4. Wait for exit animation, then restart
-          timeoutId = setTimeout(cycle, 1000); 
+          timeoutId = setTimeout(cycle, 1000);
         }, displayDuration);
       };
 
@@ -167,42 +198,42 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
     }, delayMs);
 
     return () => {
-        clearTimeout(startTimeout);
-        clearTimeout(timeoutId);
+      clearTimeout(startTimeout);
+      clearTimeout(timeoutId);
     };
   }, [quadrant, delayMs]); // Dependencies are static, so this runs once on mount
 
   const Icon = content.icon;
 
   return (
-    <div 
-        className={`absolute transition-all duration-1000 ease-in-out z-0`}
-        style={{ 
-            ...style,
-            opacity: visible ? 1 : 0,
-            // Add a slight translation when fading out to make it look like it's drifting away
-            transform: visible 
-                ? `${style.transform} translateY(0px)` 
-                : `${style.transform} translateY(-30px)`
-        }}
+    <div
+      className={`absolute transition-all duration-1000 ease-in-out z-0`}
+      style={{
+        ...style,
+        opacity: visible ? 1 : 0,
+        // Add a slight translation when fading out to make it look like it's drifting away
+        transform: visible
+          ? `${style.transform} translateY(0px)`
+          : `${style.transform} translateY(-30px)`
+      }}
     >
-        <div className={`
-            w-[260px] md:w-[320px] p-5 rounded-[2rem] backdrop-blur-xl border shadow-2xl
-            flex flex-col gap-3 transition-colors duration-500
+      <div className={`
+            w-[85vw] max-w-[300px] md:w-[320px] p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] backdrop-blur-xl border shadow-2xl
+            flex flex-col gap-2 md:gap-3 transition-colors duration-500
             ${content.bg}
         `}>
-            <div className="flex items-start gap-3">
-                <div className={`p-2.5 rounded-xl bg-black/40 ${content.color} shrink-0 shadow-inner mt-1`}>
-                    <Icon size={22} strokeWidth={2.5} />
-                </div>
-                <h3 className="font-display font-bold text-lg text-white leading-tight drop-shadow-md">
-                    {content.title}
-                </h3>
-            </div>
-            <p className="text-sm text-gray-100 font-medium leading-relaxed opacity-90 pl-1">
-                {content.text}
-            </p>
+        <div className="flex items-start gap-3">
+          <div className={`p-2 md:p-2.5 rounded-xl bg-black/40 ${content.color} shrink-0 shadow-inner mt-1`}>
+            <Icon size={18} className="md:w-[22px] md:h-[22px]" strokeWidth={2.5} />
+          </div>
+          <h3 className="font-display font-bold text-base md:text-lg text-white leading-tight drop-shadow-md pt-1">
+            {content.title}
+          </h3>
         </div>
+        <p className="text-xs md:text-sm text-gray-100 font-medium leading-relaxed opacity-90 pl-1">
+          {content.text}
+        </p>
+      </div>
     </div>
   );
 };
@@ -210,7 +241,7 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
 export const SneakPeekCarousel: React.FC = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-       {/* Ambient Blobs */}
+      {/* Ambient Blobs */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse delay-1000" />
 
@@ -222,7 +253,7 @@ export const SneakPeekCarousel: React.FC = () => {
       <FloatingWidget quadrant="TR" delayMs={2000} />
       <FloatingWidget quadrant="BL" delayMs={1200} />
       <FloatingWidget quadrant="BR" delayMs={3500} />
-      
+
     </div>
   );
 };

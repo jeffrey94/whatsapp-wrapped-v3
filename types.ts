@@ -58,6 +58,7 @@ export interface AIGeneratedContent {
     name: string;
     description: string;
     percentage: string; // e.g. "High", "Medium", "Low" or "30%"
+    ledBy: string; // The participant who leads this topic
   }[];
   predictions: string[]; // 3 predictions for next year
   participantQuotes: {
@@ -69,6 +70,7 @@ export interface AIGeneratedContent {
     values: string;
   };
   wordCloud: string[]; // List of AI-selected vocabulary
+  signOffMessage: string; // Fun/satirical goodbye message for the end
 }
 
 export interface WrappedData {
