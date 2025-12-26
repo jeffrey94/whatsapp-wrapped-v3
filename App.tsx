@@ -50,6 +50,35 @@ const App: React.FC = () => {
     checkSharedReport();
   }, []);
 
+  // Cycling loading messages
+  const loadingMessages = useMemo(() => [
+    "🤖 Asking AI to judge your life choices...",
+    "👀 Reading your texts (yikes)...",
+    "📊 Calculating who ghosts the most...",
+    "🧠 Decoding your late-night typos...",
+    "🍵 Spilling the digital tea...",
+    "🕵️‍♂️ Investigating emoji overuse...",
+    "💀 Analyzing your 'lol' vs real laughter ratio...",
+    "💅 Assessing the group chat vibe...",
+    "📉 Measuring productivity lost to this chat..."
+  ], []);
+
+  useEffect(() => {
+    let interval: string | number | NodeJS.Timeout | undefined;
+    if (step === AppStep.PROCESSING && !aiError) {
+      // Don't override the initial "Parsing..." or "Crunching..." messages immediately
+      // Only cycle when we hit the AI stage
+      if (loadingMsg.includes("AI") || loadingMsg.includes("Reading")) {
+        let i = 0;
+        interval = setInterval(() => {
+          setLoadingMsg(loadingMessages[i]);
+          i = (i + 1) % loadingMessages.length;
+        }, 2500);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [step, aiError, loadingMsg, loadingMessages]);
+
   const handleFileUpload = async (file: File) => {
     try {
       setStep(AppStep.PROCESSING);
@@ -84,7 +113,7 @@ const App: React.FC = () => {
       setPendingAnalytics(analytics);
       setPendingMessages(fullHistory);
 
-      setLoadingMsg("🤖 AI is analyzing your conversations (this may take a moment)...");
+      setLoadingMsg("🤖 Asking AI to judge your life choices..."); // Start the cycle
 
       const aiContent = await generateAIInsights(analytics, fullHistory);
 
@@ -102,7 +131,7 @@ const App: React.FC = () => {
       setStep(AppStep.RESULTS);
     } catch (error) {
       console.error(error);
-      alert("Error processing file. Please ensure it's a valid WhatsApp export.");
+      alert("Error process file. Please ensure it's a valid WhatsApp export.");
       setStep(AppStep.UPLOAD);
     }
   };
