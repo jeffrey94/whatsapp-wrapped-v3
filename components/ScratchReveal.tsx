@@ -108,15 +108,21 @@ export const ScratchReveal: React.FC<ScratchRevealProps> = ({
     };
 
     const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+        // Prevent event from bubbling up to parent swipe handlers
+        e.stopPropagation();
         setIsDrawing(true);
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: React.MouseEvent | React.TouchEvent) => {
+        e.stopPropagation();
         setIsDrawing(false);
         checkRevealProgress();
     };
 
     const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+        // Always stop propagation to prevent swipe navigation while scratching
+        e.stopPropagation();
+
         if (!isDrawing && e.type !== 'touchmove') return;
 
         const canvas = canvasRef.current;
@@ -128,8 +134,6 @@ export const ScratchReveal: React.FC<ScratchRevealProps> = ({
         if ('touches' in e) {
             clientX = e.touches[0].clientX;
             clientY = e.touches[0].clientY;
-            // Prevent scrolling while scratching
-            // e.preventDefault(); // Warning: standard passive listener issue in React 18, better handle via style
         } else {
             clientX = (e as React.MouseEvent).clientX;
             clientY = (e as React.MouseEvent).clientY;
