@@ -26,4 +26,7 @@ dist-ssr
 WhatsApp_Wrapped_2025_data.json
 sample.json
 debug1.json
-debug2.json
+debug2.json 
+debug3.json
+testing/
+scripts/test_*.ts

@@ -22,9 +22,30 @@ export const generateAIInsights = async (
   }));
 
   // 2. Full Timeline Preparation (capped)
+  // Optimization: Map author names to short IDs (P1, P2, etc.) to save tokens
+  const authorMap = new Map<string, string>();
+  const authors = Array.from(new Set(messages.map(m => m.author)));
+  authors.forEach((author, index) => {
+    authorMap.set(author, `P${index + 1}`);
+  });
+
+  const participantLegend = Array.from(authorMap.entries())
+    .map(([name, id]) => `${id}=${name}`)
+    .join(', ');
+
+  let lastDate = '';
   const timeline = messages
     .slice(-30000)
-    .map(m => `[${m.date.toDateString()}] ${m.author}: ${m.content}`)
+    .reduce((acc, m) => {
+      const dateStr = m.date.toDateString();
+      if (dateStr !== lastDate) {
+        acc.push(`[DATE: ${dateStr}]`);
+        lastDate = dateStr;
+      }
+      const shortName = authorMap.get(m.author) || m.author;
+      acc.push(`${shortName}: ${m.content}`);
+      return acc;
+    }, [] as string[])
     .join('\n');
 
   // 3. Raw frequent words (top 100) for AI filtering
@@ -37,6 +58,7 @@ export const generateAIInsights = async (
     - Total Messages: ${analytics.totalMessages}
     - Top Participants: ${JSON.stringify(topParticipants)}
     - Most frequent raw words detected (may include noise): ${rawFreqWords}
+    - Participants Legend: ${participantLegend}
     
     Chat Timeline:
     ${timeline}
@@ -149,6 +171,7 @@ export const generateAIInsights = async (
           parsed = JSON.parse(response.text) as AIGeneratedContent;
         } catch (parseError) {
           console.error('JSON parse error - response may be truncated:', parseError);
+          console.log('Raw response text:', response.text); // Debug: Inspect the raw output
           throw new Error('Invalid JSON response from AI');
         }
 
@@ -158,6 +181,7 @@ export const generateAIInsights = async (
 
         if (missingFields.length > 0) {
           console.error('Missing required fields:', missingFields);
+          console.log('Parsed object:', parsed); // Debug: See what DID come back
           throw new Error(`Incomplete AI response: missing ${missingFields.join(', ')}`);
         }
 
