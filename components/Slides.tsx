@@ -785,6 +785,8 @@ export const TopicsSlide: React.FC<SlideProps> = ({ data, items }) => {
 // SLIDE 11: PREDICTIONS (Mystical Psychic Theme)
 // ============================================
 
+import { ScratchReveal } from './ScratchReveal';
+
 export const PredictionSlide: React.FC<SlideProps> = ({ data }) => {
   const predictions = data.aiContent?.predictions || [];
 
@@ -809,7 +811,7 @@ export const PredictionSlide: React.FC<SlideProps> = ({ data }) => {
         <h2 className="text-2xl font-black font-display bg-gradient-to-r from-purple-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
           The Oracle Speaks
         </h2>
-        <p className="text-xs text-purple-300/60 mt-1 italic">Visions for 2026...</p>
+        <p className="text-xs text-purple-300/60 mt-1 italic">Rub the cards to reveal your fate...</p>
       </div>
 
       {/* Predictions */}
@@ -820,17 +822,26 @@ export const PredictionSlide: React.FC<SlideProps> = ({ data }) => {
             className="relative animate-slide-up"
             style={{ animationDelay: `${i * 150}ms` }}
           >
-            {/* Card with mystical border */}
-            <div className="glass rounded-2xl p-4 border border-purple-500/20 hover:border-purple-400/40 transition-colors group">
-              <div className="flex gap-4 items-start">
-                {/* Vision number - mystical style */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/30 to-indigo-600/30 border border-purple-400/30 flex items-center justify-center text-sm font-bold text-purple-300 shrink-0">
-                  {['I', 'II', 'III', 'IV', 'V'][i] || i + 1}
+            {/* Wrapper for scratch effect - ensure dimensions are set nicely */}
+            <div className="relative rounded-2xl overflow-hidden">
+              <ScratchReveal
+                threshold={50}
+                brushSize={30}
+                coverColor="rgba(255, 255, 255, 0.9)" // Steamy white / Snow
+              >
+                {/* Card with mystical border */}
+                <div className="glass rounded-2xl p-4 border border-purple-500/20 hover:border-purple-400/40 transition-colors group bg-indigo-900/40">
+                  <div className="flex gap-4 items-start">
+                    {/* Vision number - mystical style */}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500/30 to-indigo-600/30 border border-purple-400/30 flex items-center justify-center text-sm font-bold text-purple-300 shrink-0">
+                      {['I', 'II', 'III', 'IV', 'V'][i] || i + 1}
+                    </div>
+                    <p className="text-sm text-white/80 leading-relaxed italic font-serif">
+                      "{pred}"
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-white/80 leading-relaxed italic font-serif">
-                  "{pred}"
-                </p>
-              </div>
+              </ScratchReveal>
             </div>
           </div>
         ))}
