@@ -56,13 +56,18 @@ export const generateAIInsights = async (
 
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
+  const PRIMARY_MODEL = 'gemini-3-flash';
+  const FALLBACK_MODEL = 'gemini-2.5-flash';
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    // Use primary model for first attempt, fallback for retries
+    const model = attempt === 1 ? PRIMARY_MODEL : FALLBACK_MODEL;
+
     try {
-      console.log(`AI Analysis attempt ${attempt}/${MAX_RETRIES}...`);
+      console.log(`AI Analysis attempt ${attempt}/${MAX_RETRIES} using ${model}...`);
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash',
+        model,
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
