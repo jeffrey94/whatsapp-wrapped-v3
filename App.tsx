@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { AppStep, WrappedData } from './types';
+import { AppStep, WrappedData, ChatAnalytics, Message } from './types';
 import { parseChatFile } from './services/chatParser';
 import { analyzeChat } from './services/analytics';
 import { generateAIInsights } from './services/geminiService';
 import { FileUpload } from './components/FileUpload';
 import { WrappedView } from './components/WrappedView';
 import { Snowfall } from './components/Snowfall';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
 
 const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>(AppStep.UPLOAD);
   const [wrappedData, setWrappedData] = useState<WrappedData | null>(null);
   const [loadingMsg, setLoadingMsg] = useState<string>("");
   const [isSharedView, setIsSharedView] = useState(false);
+  const [aiError, setAiError] = useState(false);
+  const [pendingAnalytics, setPendingAnalytics] = useState<ChatAnalytics | null>(null);
+  const [pendingMessages, setPendingMessages] = useState<Message[] | null>(null);
 
   // Check for shared report ID in URL on mount
   useEffect(() => {
@@ -49,6 +53,7 @@ const App: React.FC = () => {
   const handleFileUpload = async (file: File) => {
     try {
       setStep(AppStep.PROCESSING);
+      setAiError(false);
 
       setLoadingMsg("Parsing chat file...");
       const allMessages = await parseChatFile(file);
@@ -71,13 +76,23 @@ const App: React.FC = () => {
         analytics.groupName = fileNameMatch[1];
       }
 
-      setLoadingMsg("Reading your 2025 conversation...");
-
       // Filter out only media placeholders. 
       // We keep short messages ("lol", "ok") as they are crucial for the "Vibe" analysis.
       const fullHistory = messages.filter(m => !m.isMedia);
 
+      // Store pending data for potential retry
+      setPendingAnalytics(analytics);
+      setPendingMessages(fullHistory);
+
+      setLoadingMsg("🤖 AI is analyzing your conversations (this may take a moment)...");
+
       const aiContent = await generateAIInsights(analytics, fullHistory);
+
+      if (!aiContent) {
+        // AI failed after retries - show error state
+        setAiError(true);
+        return;
+      }
 
       setWrappedData({
         analytics,
@@ -92,8 +107,35 @@ const App: React.FC = () => {
     }
   };
 
+  const handleRetryAI = async () => {
+    if (!pendingAnalytics || !pendingMessages) {
+      setStep(AppStep.UPLOAD);
+      return;
+    }
+
+    setAiError(false);
+    setLoadingMsg("🔄 Retrying AI analysis...");
+
+    const aiContent = await generateAIInsights(pendingAnalytics, pendingMessages);
+
+    if (!aiContent) {
+      setAiError(true);
+      return;
+    }
+
+    setWrappedData({
+      analytics: pendingAnalytics,
+      aiContent
+    });
+
+    setStep(AppStep.RESULTS);
+  };
+
   const handleReset = () => {
     setWrappedData(null);
+    setPendingAnalytics(null);
+    setPendingMessages(null);
+    setAiError(false);
     setStep(AppStep.UPLOAD);
   };
 
@@ -225,31 +267,66 @@ const App: React.FC = () => {
         <div className="h-full w-full flex flex-col items-center justify-center relative">
           {/* Background */}
           <div className="absolute inset-0">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-purple-600/30 rounded-full blur-[100px] animate-pulse" />
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 ${aiError ? 'bg-red-600/30' : 'bg-purple-600/30'} rounded-full blur-[100px] animate-pulse`} />
           </div>
 
-          {/* Loading UI */}
+          {/* Content */}
           <div className="relative z-10 text-center px-6">
-            {/* Spinner */}
-            <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 rounded-full border-4 border-white/10" />
-              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin" />
-              <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
-            </div>
+            {aiError ? (
+              <>
+                {/* Error Icon */}
+                <div className="w-20 h-20 mx-auto mb-8 flex items-center justify-center">
+                  <AlertTriangle size={64} className="text-red-400" />
+                </div>
 
-            <h2 className="text-2xl font-bold font-display mb-3 animate-pulse">{loadingMsg}</h2>
-            <p className="text-sm text-white/50">This happens locally in your browser</p>
+                <h2 className="text-2xl font-bold font-display mb-3 text-red-400">AI Analysis Failed</h2>
+                <p className="text-sm text-white/50 mb-8 max-w-xs mx-auto">
+                  The AI service is temporarily unavailable. Your data is saved — you can retry without re-uploading.
+                </p>
 
-            {/* Progress dots */}
-            <div className="flex justify-center gap-2 mt-8">
-              {[0, 1, 2].map(i => (
-                <div
-                  key={i}
-                  className="w-2 h-2 rounded-full bg-white/30 animate-bounce"
-                  style={{ animationDelay: `${i * 0.15}s` }}
-                />
-              ))}
-            </div>
+                {/* Retry Button */}
+                <button
+                  onClick={handleRetryAI}
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg hover:opacity-90 transition-all mb-4"
+                >
+                  <RefreshCw size={20} />
+                  Retry AI Analysis
+                </button>
+
+                {/* Start Over Link */}
+                <div>
+                  <button
+                    onClick={handleReset}
+                    className="text-sm text-white/40 hover:text-white/60 transition-colors"
+                  >
+                    or start over with a different file
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Spinner */}
+                <div className="relative w-20 h-20 mx-auto mb-8">
+                  <div className="absolute inset-0 rounded-full border-4 border-white/10" />
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin" />
+                  <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+                </div>
+
+                <h2 className="text-2xl font-bold font-display mb-3 animate-pulse">{loadingMsg}</h2>
+                <p className="text-sm text-white/50">This happens locally in your browser</p>
+
+                {/* Progress dots */}
+                <div className="flex justify-center gap-2 mt-8">
+                  {[0, 1, 2].map(i => (
+                    <div
+                      key={i}
+                      className="w-2 h-2 rounded-full bg-white/30 animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

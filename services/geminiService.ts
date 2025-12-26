@@ -54,87 +54,105 @@ export const generateAIInsights = async (
     Output strictly in JSON matching the schema.
   `;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            groupDescription: { type: Type.STRING },
-            groupPersonality: {
-              type: Type.OBJECT,
-              properties: {
-                vibe: { type: Type.STRING },
-                values: { type: Type.STRING }
-              }
-            },
-            memorableMoments: {
-              type: Type.ARRAY,
-              items: {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`AI Analysis attempt ${attempt}/${MAX_RETRIES}...`);
+
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              groupDescription: { type: Type.STRING },
+              groupPersonality: {
                 type: Type.OBJECT,
                 properties: {
-                  title: { type: Type.STRING },
-                  description: { type: Type.STRING },
+                  vibe: { type: Type.STRING },
+                  values: { type: Type.STRING }
                 }
-              }
-            },
-            badges: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  memberName: { type: Type.STRING },
-                  badgeTitle: { type: Type.STRING },
-                  badgeDescription: { type: Type.STRING },
-                  emoji: { type: Type.STRING }
+              },
+              memorableMoments: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    title: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                  }
                 }
-              }
-            },
-            topics: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  description: { type: Type.STRING },
-                  percentage: { type: Type.STRING },
-                  ledBy: { type: Type.STRING }
+              },
+              badges: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    memberName: { type: Type.STRING },
+                    badgeTitle: { type: Type.STRING },
+                    badgeDescription: { type: Type.STRING },
+                    emoji: { type: Type.STRING }
+                  }
                 }
-              }
-            },
-            predictions: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            },
-            participantQuotes: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  quote: { type: Type.STRING }
+              },
+              topics: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING },
+                    description: { type: Type.STRING },
+                    percentage: { type: Type.STRING },
+                    ledBy: { type: Type.STRING }
+                  }
                 }
-              }
-            },
-            wordCloud: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            },
-            signOffMessage: { type: Type.STRING }
+              },
+              predictions: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              participantQuotes: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    name: { type: Type.STRING },
+                    quote: { type: Type.STRING }
+                  }
+                }
+              },
+              wordCloud: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              signOffMessage: { type: Type.STRING }
+            }
           }
         }
-      }
-    });
+      });
 
-    if (response.text) {
-      return JSON.parse(response.text) as AIGeneratedContent;
+      if (response.text) {
+        console.log('AI Analysis successful!');
+        return JSON.parse(response.text) as AIGeneratedContent;
+      }
+
+      // If no text, treat as failure and retry
+      throw new Error('Empty response from AI');
+
+    } catch (error) {
+      console.error(`AI attempt ${attempt} failed:`, error);
+
+      if (attempt < MAX_RETRIES) {
+        console.log(`Retrying in ${RETRY_DELAY / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      }
     }
-    return null;
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    return null;
   }
+
+  console.error('All AI attempts failed');
+  return null;
 };
