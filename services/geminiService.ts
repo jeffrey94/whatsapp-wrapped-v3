@@ -142,7 +142,26 @@ export const generateAIInsights = async (
 
       if (response.text) {
         console.log('AI Analysis successful!');
-        return JSON.parse(response.text) as AIGeneratedContent;
+
+        // Parse and validate the response
+        let parsed: AIGeneratedContent;
+        try {
+          parsed = JSON.parse(response.text) as AIGeneratedContent;
+        } catch (parseError) {
+          console.error('JSON parse error - response may be truncated:', parseError);
+          throw new Error('Invalid JSON response from AI');
+        }
+
+        // Validate required fields exist
+        const requiredFields = ['badges', 'memorableMoments', 'predictions', 'wordCloud'];
+        const missingFields = requiredFields.filter(f => !parsed[f as keyof AIGeneratedContent]);
+
+        if (missingFields.length > 0) {
+          console.error('Missing required fields:', missingFields);
+          throw new Error(`Incomplete AI response: missing ${missingFields.join(', ')}`);
+        }
+
+        return parsed;
       }
 
       // If no text, treat as failure and retry
