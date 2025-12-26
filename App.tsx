@@ -313,7 +313,6 @@ const App: React.FC = () => {
                 </div>
 
                 <h2 className="text-2xl font-bold font-display mb-3 animate-pulse">{loadingMsg}</h2>
-                <p className="text-sm text-white/50">This happens locally in your browser</p>
 
                 {/* Progress dots */}
                 <div className="flex justify-center gap-2 mt-8">
