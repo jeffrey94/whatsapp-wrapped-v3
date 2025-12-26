@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { AppStep, WrappedData, ChatAnalytics, Message } from './types';
 import { parseChatFile } from './services/chatParser';
 import { analyzeChat } from './services/analytics';
