@@ -43,8 +43,8 @@ export const ScratchReveal: React.FC<ScratchRevealProps> = ({
 
                 // Add "Fog" texture/noise (optional, simple noise)
                 // For now just solid color, maybe add text "Rub to reveal"
-                ctx.font = "bold 14px sans-serif";
-                ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.font = "bold 16px sans-serif";
+                ctx.fillStyle = "rgba(88, 28, 135, 0.8)"; // Dark purple text
                 ctx.textAlign = "center";
 
                 // Draw centered text
