@@ -62,7 +62,7 @@ export const generateAIInsights = async (
       console.log(`AI Analysis attempt ${attempt}/${MAX_RETRIES}...`);
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.0-flash',
+        model: 'gemini-3-flash',
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
