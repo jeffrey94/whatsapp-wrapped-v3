@@ -56,7 +56,7 @@ export const generateAIInsights = async (
 
   const MAX_RETRIES = 3;
   const RETRY_DELAY = 2000; // 2 seconds
-  const PRIMARY_MODEL = 'gemini-3-flash';
+  const PRIMARY_MODEL = 'gemini-3-flash-preview';
   const FALLBACK_MODEL = 'gemini-2.5-flash';
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
