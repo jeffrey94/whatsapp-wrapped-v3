@@ -1,14 +1,24 @@
-import React, { useCallback, useState } from 'react';
-import { Upload, FileText, AlertTriangle, X, Shield } from 'lucide-react';
+import React, { useCallback, useState, useRef } from 'react';
+import { Upload, FileText, AlertTriangle, X, Shield, Mail, Lock, Sparkles } from 'lucide-react';
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
   isLoading?: boolean;
 }
 
+const CORRECT_PASSWORD = 'WAWRAPPED20251234';
+
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showWaitlist, setShowWaitlist] = useState(false);
+  const [showPasswordInput, setShowPasswordInput] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -17,7 +27,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
       if (isLoading) return;
       const file = e.dataTransfer.files[0];
       if (file && file.name.endsWith('.txt')) {
-        setShowDisclaimer(false);
+        resetModals();
         onFileUpload(file);
       } else {
         alert("Please upload a .txt file");
@@ -39,13 +49,69 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
     if (isLoading) return;
     const file = e.target.files?.[0];
     if (file) {
-      setShowDisclaimer(false);
+      resetModals();
       onFileUpload(file);
+    }
+  };
+
+  const resetModals = () => {
+    setShowDisclaimer(false);
+    setShowWaitlist(false);
+    setShowPasswordInput(false);
+    setPassword('');
+    setPasswordError(false);
+  };
+
+  const handleSurrenderClick = () => {
+    setShowDisclaimer(false);
+    setShowWaitlist(true);
+  };
+
+  const handleEmailSubmit = async () => {
+    if (!email.trim()) return;
+
+    setEmailSubmitting(true);
+    try {
+      await fetch('/api/join-waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() })
+      });
+      setEmailSubmitted(true);
+    } catch (error) {
+      console.error('Failed to submit email:', error);
+    } finally {
+      setEmailSubmitting(false);
+    }
+  };
+
+  const handlePasswordSubmit = () => {
+    if (password === CORRECT_PASSWORD) {
+      setPasswordError(false);
+      // Trigger file picker immediately
+      fileInputRef.current?.click();
+    } else {
+      setPasswordError(true);
+    }
+  };
+
+  const handlePasswordKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handlePasswordSubmit();
     }
   };
 
   return (
     <>
+      {/* Hidden file input for password bypass */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".txt"
+        className="hidden"
+        onChange={handleChange}
+      />
+
       <div className="w-full p-6">
         {/* Drop Zone */}
         <div
@@ -157,15 +223,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
 
               {/* Actions - compact */}
               <div className="space-y-2">
-                <label className="block w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl cursor-pointer active:scale-95 transition-transform">
+                <button
+                  onClick={handleSurrenderClick}
+                  className="block w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl cursor-pointer active:scale-95 transition-transform"
+                >
                   I surrender to Google 🙇
-                  <input
-                    type="file"
-                    accept=".txt"
-                    className="hidden"
-                    onChange={handleChange}
-                  />
-                </label>
+                </button>
 
                 <button
                   onClick={() => setShowDisclaimer(false)}
@@ -180,6 +243,158 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
                 <Shield size={10} />
                 <span>Processed, not stored</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Waitlist Modal */}
+      {showWaitlist && !showPasswordInput && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-6"
+          onClick={() => resetModals()}
+        >
+          <div
+            className="w-full max-w-sm bg-gradient-to-b from-gray-900 to-black rounded-3xl p-5 border border-white/10 shadow-2xl animate-scale-in relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close X */}
+            <button
+              onClick={() => resetModals()}
+              className="absolute top-3 right-3 text-white/30 hover:text-white/60 p-1"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="text-center space-y-4">
+              {/* Icon + Title */}
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold">Coming Soon!</h3>
+              </div>
+
+              {/* Message */}
+              <div className="text-sm text-white/60 leading-relaxed">
+                <p>This feature isn't open to the public yet.</p>
+                <p className="text-white/40 mt-1">Drop your email to join the waitlist!</p>
+              </div>
+
+              {/* Email Input */}
+              {!emailSubmitted ? (
+                <div className="space-y-3">
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 text-sm focus:outline-none focus:border-purple-500 transition-colors"
+                    />
+                  </div>
+                  <button
+                    onClick={handleEmailSubmit}
+                    disabled={emailSubmitting || !email.trim()}
+                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {emailSubmitting ? 'Joining...' : 'Join Waitlist'}
+                  </button>
+                </div>
+              ) : (
+                <div className="py-3 px-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                  <p className="text-green-400 text-sm">✓ You're on the list!</p>
+                </div>
+              )}
+
+              {/* Secret Access Link - subtle */}
+              <p className="text-xs text-white/40">
+                Already have access?{' '}
+                <button
+                  onClick={() => setShowPasswordInput(true)}
+                  className="text-purple-400 hover:text-purple-300 underline underline-offset-2"
+                >
+                  Enter password
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Input Modal */}
+      {showPasswordInput && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-fade-in p-6"
+          onClick={() => resetModals()}
+        >
+          <div
+            className="w-full max-w-sm bg-gradient-to-b from-gray-900 to-black rounded-3xl p-5 border border-white/10 shadow-2xl animate-scale-in relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close X */}
+            <button
+              onClick={() => resetModals()}
+              className="absolute top-3 right-3 text-white/30 hover:text-white/60 p-1"
+            >
+              <X size={18} />
+            </button>
+
+            <div className="text-center space-y-4">
+              {/* Icon + Title */}
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+                  <Lock className="w-5 h-5 text-pink-400" />
+                </div>
+                <h3 className="text-lg font-bold">Secret Access</h3>
+              </div>
+
+              {/* Message */}
+              <p className="text-sm text-white/60">
+                Enter the magic password to unlock early access 🔮
+              </p>
+
+              {/* Password Input */}
+              <div className="space-y-3">
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <input
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordError(false);
+                    }}
+                    onKeyDown={handlePasswordKeyDown}
+                    className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/30 text-sm focus:outline-none transition-colors ${passwordError
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-white/10 focus:border-purple-500'
+                      }`}
+                  />
+                </div>
+
+                {passwordError && (
+                  <p className="text-red-400 text-xs">Hmm, that's not it. Try again!</p>
+                )}
+
+                <button
+                  onClick={handlePasswordSubmit}
+                  disabled={!password.trim()}
+                  className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold rounded-xl active:scale-95 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Unlock Access 🚀
+                </button>
+              </div>
+
+              {/* Back button */}
+              <button
+                onClick={() => setShowPasswordInput(false)}
+                className="text-xs text-white/40 hover:text-white/60"
+              >
+                ← Back to waitlist
+              </button>
             </div>
           </div>
         </div>
