@@ -82,7 +82,7 @@ export const analyzeChat = (messages: Message[]): ChatAnalytics => {
 
     // Word Analysis
     // Filter common punctuation but keep hyphens or apostrophes inside words if needed
-    const words = msg.content.toLowerCase().split(/[\s,.!?"'()\[\]{}|\\\/~`*<>]+/).filter(Boolean);
+    const words = msg.content.toLowerCase().split(/[\s,.!?"'()[\]{}|\\/~`*<>]+/).filter(Boolean);
     stats.wordCount += words.length;
 
     words.forEach(word => {
