@@ -1,8 +1,26 @@
 {
-  "name": "whatsapp-wrapped-v3",
-  "private": true,
-  "version": "0.0.0",
+  "name": "whatsapp-wrapped",
+  "version": "1.0.0",
+  "description": "Generate Spotify Wrapped-style insights from your WhatsApp group chats using AI",
   "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeffrey94/whatsapp-wrapped-v3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jeffrey94/whatsapp-wrapped-v3/issues"
+  },
+  "homepage": "https://github.com/jeffrey94/whatsapp-wrapped-v3#readme",
+  "keywords": [
+    "whatsapp",
+    "wrapped",
+    "chat-analytics",
+    "ai",
+    "gemini",
+    "react",
+    "typescript"
+  ],
   "engines": {
     "node": "20.x"
   },
