@@ -6,7 +6,9 @@ interface FileUploadProps {
   isLoading?: boolean;
 }
 
-const CORRECT_PASSWORD = 'WAWRAPPED20251234';
+// Password gate: Set VITE_ACCESS_PASSWORD env var to enable, leave empty to disable
+const ACCESS_PASSWORD = import.meta.env.VITE_ACCESS_PASSWORD || '';
+const PASSWORD_GATE_ENABLED = ACCESS_PASSWORD.length > 0;
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading }) => {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -64,7 +66,13 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
 
   const handleSurrenderClick = () => {
     setShowDisclaimer(false);
-    setShowWaitlist(true);
+    if (PASSWORD_GATE_ENABLED) {
+      // Show waitlist/password gate
+      setShowWaitlist(true);
+    } else {
+      // No password gate - directly trigger file picker
+      fileInputRef.current?.click();
+    }
   };
 
   const handleEmailSubmit = async () => {
@@ -86,7 +94,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
   };
 
   const handlePasswordSubmit = () => {
-    if (password === CORRECT_PASSWORD) {
+    if (password === ACCESS_PASSWORD) {
       setPasswordError(false);
       // Trigger file picker immediately
       fileInputRef.current?.click();
