@@ -93,8 +93,8 @@ export const generateAIInsights = async (
     5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb").
     6. "Quotes": Extract one short, distinct "signature quote" (max 10 words) for each of the top 5 participants listed in Group Stats. It should be something they actually said or characteristic of them.
     7. "Word Cloud": Curate a list of 30-40 specific words or short phrases that represent this group's unique vocabulary, slang, inside jokes, or recurrent topics. Use the "Raw frequent words" list as a hint but prioritise finding slang/names in the timeline. Filter out common English stop words (like 'the', 'is', 'message', 'omitted') and generic verbs/adverbs. Returns strings only.
-    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences) for the end of the Wrapped presentation. It should feel like a natural ending that acknowledges the year of chatting. Examples: "See you in 2026 — may your notifications be fewer and your memes be danker." or "Another year of questionable life advice and even more questionable memes. You survived."
-    
+    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences) for the end of the Wrapped presentation. It should feel like a natural ending that acknowledges the year of chatting. Do NOT include emojis. Examples: "See you in 2026 — may your notifications be fewer and your memes be danker." or "Another year of questionable life advice and even more questionable memes. You survived."
+
     Output strictly in JSON matching the schema.
   `;
 
