@@ -1,11 +1,30 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { ChatAnalytics, Message, AIGeneratedContent } from '../types';
+import { apiKeyManager } from '../utils/apiKeyManager';
+
+// Get API key: prioritize user-provided key from localStorage, fallback to env variable
+const getApiKey = (): string | null => {
+  // Priority 1: User-provided key from localStorage
+  const userKey = apiKeyManager.get();
+  if (userKey) return userKey;
+
+  // Priority 2: Environment variable (for self-hosted)
+  const envKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (envKey) return envKey;
+
+  return null;
+};
+
+// Check if any API key is available
+export const hasApiKey = (): boolean => {
+  return !!getApiKey();
+};
 
 export const generateAIInsights = async (
   analytics: ChatAnalytics,
   messages: Message[]
 ): Promise<AIGeneratedContent | null> => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  const apiKey = getApiKey();
 
   if (!apiKey) {
     console.warn('No API Key provided for Gemini');
