@@ -30,3 +30,11 @@ debug2.json
 debug3.json
 testing/
 scripts/test_*.ts
+
+# Environment files (prevent accidental commits)
+.env
+.env.*
+!.env.example
+
+
+ 
