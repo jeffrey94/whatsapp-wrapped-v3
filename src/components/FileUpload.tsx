@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useRef } from 'react';
-import { Upload, FileText, AlertTriangle, X, Shield, Mail, Lock, Sparkles } from 'lucide-react';
+import { Upload, AlertTriangle, X, Shield, Mail, Lock, Sparkles } from 'lucide-react';
+import { ApiKeyInput } from './ApiKeyInput';
+import { hasApiKey } from '../services/geminiService';
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
@@ -20,13 +22,22 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
   const [passwordError, setPasswordError] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [hasKey, setHasKey] = useState(hasApiKey());
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleApiKeyChange = (keyExists: boolean) => {
+    setHasKey(keyExists);
+  };
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       setIsDragOver(false);
       if (isLoading) return;
+      if (!hasApiKey()) {
+        alert('Please add your Gemini API key first');
+        return;
+      }
       const file = e.dataTransfer.files[0];
       if (file && file.name.endsWith('.txt')) {
         resetModals();
@@ -121,6 +132,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
       />
 
       <div className="w-full p-6">
+        {/* API Key Input */}
+        <ApiKeyInput onKeyChange={handleApiKeyChange} />
+
         {/* Drop Zone */}
         <div
           onDrop={handleDrop}
@@ -171,17 +185,29 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
 
           {/* Button */}
           {!isLoading && (
-            <button
-              onClick={() => setShowDisclaimer(true)}
-              className="
-                w-full py-4 px-6 bg-white text-black font-bold rounded-xl
-                transition-all duration-200 active:scale-95
-                hover:bg-white/90 hover:shadow-lg hover:shadow-white/10
-                touch-btn
-              "
-            >
-              Select text file
-            </button>
+            <>
+              {!hasKey && (
+                <p className="text-sm text-amber-400 mb-3">
+                  Please add your Gemini API key above to continue
+                </p>
+              )}
+              <button
+                onClick={() => setShowDisclaimer(true)}
+                disabled={!hasKey}
+                className={`
+                  w-full py-4 px-6 font-bold rounded-xl
+                  transition-all duration-200 active:scale-95
+                  touch-btn
+                  ${
+                    hasKey
+                      ? 'bg-white text-black hover:bg-white/90 hover:shadow-lg hover:shadow-white/10'
+                      : 'bg-white/20 text-white/40 cursor-not-allowed'
+                  }
+                `}
+              >
+                Select text file
+              </button>
+            </>
           )}
         </div>
 
