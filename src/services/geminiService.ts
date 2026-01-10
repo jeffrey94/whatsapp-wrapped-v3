@@ -2,6 +2,49 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { ChatAnalytics, Message, AIGeneratedContent } from '../types';
 import { apiKeyManager } from '../utils/apiKeyManager';
 
+/**
+ * Attempts to repair truncated JSON by closing unclosed strings, arrays, and objects.
+ * This is a best-effort fallback when the AI response gets cut off.
+ */
+const repairTruncatedJson = (jsonStr: string): string => {
+  let repaired = jsonStr.trim();
+
+  // If it ends mid-string (no closing quote), close it
+  const lastQuoteIndex = repaired.lastIndexOf('"');
+  const afterLastQuote = repaired.slice(lastQuoteIndex + 1);
+
+  // Check if we're inside an unclosed string (odd number of unescaped quotes after last structural char)
+  if (lastQuoteIndex > 0 && !/["\]}]/.test(afterLastQuote.trim())) {
+    // We're likely in an unclosed string, close it
+    repaired += '"';
+  }
+
+  // Count open brackets/braces to determine what needs closing
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let prevChar = '';
+
+  for (const char of repaired) {
+    if (char === '"' && prevChar !== '\\') {
+      inString = !inString;
+    } else if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') openBraces--;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') openBrackets--;
+    }
+    prevChar = char;
+  }
+
+  // Close any remaining open structures
+  // First close arrays, then objects (reverse order of typical nesting)
+  repaired += ']'.repeat(Math.max(0, openBrackets));
+  repaired += '}'.repeat(Math.max(0, openBraces));
+
+  return repaired;
+};
+
 // Get API key: prioritize user-provided key from localStorage, fallback to env variable
 const getApiKey = (): string | null => {
   // Priority 1: User-provided key from localStorage
@@ -75,27 +118,29 @@ export const generateAIInsights = async (
 
   const prompt = `
     Analyze this WhatsApp group chat timeline from 2025.
-    
+
     Group Stats:
     - Total Messages: ${analytics.totalMessages}
     - Top Participants: ${JSON.stringify(topParticipants)}
     - Most frequent raw words detected (may include noise): ${rawFreqWords}
     - Participants Legend: ${participantLegend}
-    
+
     Chat Timeline:
     ${timeline}
-    
+
     Task (Provide JSON output):
-    1. "Group Personality": A creative 'Vibe' description (2 sentences) and a list of 'Core Values' (e.g. "Humor, Tech Support").
-    2. "Awards": Assign a creative "Badge" to 3-5 top members. 
-    3. "Moments": Identify 3 distinct memorable events, arguments, or inside jokes. Crucial: Ensure these moments involve *different* key participants to maximize coverage.
-    4. "Topics": Identify 4-5 main discussion themes (e.g. "Weekend Plans", "Politics", "Roasting X") with a frequency label (High/Medium) and the name of the participant who most leads/initiates it ("ledBy").
-    5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb").
+    IMPORTANT: Keep ALL text fields concise. Do not ramble or exceed the specified lengths.
+
+    1. "Group Personality": A creative 'Vibe' description (STRICTLY 2 sentences max, under 100 words total) and a list of 'Core Values' as a comma-separated string (e.g. "Humor, Tech Support, Memes").
+    2. "Awards": Assign a creative "Badge" to 3-5 top members. Keep badgeDescription under 20 words each.
+    3. "Moments": Identify 3 distinct memorable events, arguments, or inside jokes. Crucial: Ensure these moments involve *different* key participants to maximize coverage. Keep each description under 50 words.
+    4. "Topics": Identify 4-5 main discussion themes (e.g. "Weekend Plans", "Politics", "Roasting X") with a frequency label (High/Medium) and the name of the participant who most leads/initiates it ("ledBy"). Keep descriptions under 30 words.
+    5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb"). Max 15 words each.
     6. "Quotes": Extract one short, distinct "signature quote" (max 10 words) for each of the top 5 participants listed in Group Stats. It should be something they actually said or characteristic of them.
     7. "Word Cloud": Curate a list of 30-40 specific words or short phrases that represent this group's unique vocabulary, slang, inside jokes, or recurrent topics. Use the "Raw frequent words" list as a hint but prioritise finding slang/names in the timeline. Filter out common English stop words (like 'the', 'is', 'message', 'omitted') and generic verbs/adverbs. Returns strings only.
-    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences) for the end of the Wrapped presentation. It should feel like a natural ending that acknowledges the year of chatting. Examples: "See you in 2026 — may your notifications be fewer and your memes be danker." or "Another year of questionable life advice and even more questionable memes. You survived."
-    
-    Output strictly in JSON matching the schema.
+    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences, max 30 words) for the end of the Wrapped presentation.
+
+    Output strictly in JSON matching the schema. Be concise - quality over quantity.
   `;
 
   const MAX_RETRIES = 3;
@@ -115,6 +160,7 @@ export const generateAIInsights = async (
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
+          maxOutputTokens: 8192, // Explicit limit to prevent unknown truncation
           responseSchema: {
             type: Type.OBJECT,
             properties: {
@@ -192,9 +238,22 @@ export const generateAIInsights = async (
         try {
           parsed = JSON.parse(response.text) as AIGeneratedContent;
         } catch (parseError) {
-          console.error('JSON parse error - response may be truncated:', parseError);
-          console.log('Raw response text:', response.text); // Debug: Inspect the raw output
-          throw new Error('Invalid JSON response from AI');
+          console.warn('JSON parse error - attempting repair:', parseError);
+
+          // Try to repair truncated JSON
+          try {
+            const repairedJson = repairTruncatedJson(response.text);
+            console.log('Attempting to parse repaired JSON...');
+            parsed = JSON.parse(repairedJson) as AIGeneratedContent;
+            console.log('JSON repair successful!');
+          } catch (repairError) {
+            console.error('JSON repair failed:', repairError);
+            console.log(
+              'Raw response text (last 500 chars):',
+              response.text.slice(-500)
+            );
+            throw new Error('Invalid JSON response from AI');
+          }
         }
 
         // Validate required fields exist
