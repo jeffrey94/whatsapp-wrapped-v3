@@ -7,6 +7,8 @@
 [![React](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://www.typescriptlang.org/)
 
+**[View Example Report](https://whatsapp-wrapped-v3.vercel.app/r/pmn0WWF4)**
+
 </div>
 
 ---
@@ -56,12 +58,53 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 4. Save or share the `.txt` file
 5. Upload it to WhatsApp Wrapped
 
+## Deployment Options
+
+### Option 1: Local Only (Simplest)
+
+**Best for:** Personal use, offline events, trying it out for fun
+
+Just run `npm run dev` locally. You can:
+- Generate and view your Wrapped report
+- Export as images, ZIP, or PowerPoint
+- Share exports manually (via email, messaging apps, etc.)
+
+**Limitations:** No shareable web links (the "Share Link" feature won't work)
+
+### Option 2: Deploy to Vercel (Full Features)
+
+**Best for:** Sharing reports via web links with friends
+
+Deploying to Vercel enables the **Share Link** feature, which generates URLs like `yourapp.vercel.app/r/abc123` that anyone can view for 30 days.
+
+**Setup:**
+1. Fork this repository
+2. Import it in [Vercel](https://vercel.com/new)
+3. Add environment variables:
+   - `GEMINI_API_KEY` (required) - Your Google Gemini API key
+   - Vercel will automatically provision KV storage for the sharing feature
+4. Deploy!
+
+### Option 3: Self-Hosted Static
+
+**Best for:** Custom hosting without Vercel
+
+```bash
+npm run build
+```
+
+The output in `dist/` can be served by any static file server (Nginx, Apache, Netlify, etc.).
+
+**Note:** The sharing feature requires Vercel KV. Without it, all other features work normally - you just can't generate shareable web links.
+
 ## Project Structure
 
 ```
 whatsapp-wrapped-v3/
-├── App.tsx                 # Main application component
-├── types.ts                # TypeScript interfaces
+├── src/
+│   ├── App.tsx             # Main application component
+│   ├── main.tsx            # React entry point
+│   └── types.ts            # TypeScript interfaces
 ├── components/
 │   ├── FileUpload.tsx      # Chat file upload handler
 │   ├── WrappedView.tsx     # Main results view
@@ -86,23 +129,6 @@ whatsapp-wrapped-v3/
 | `KV_REST_API_TOKEN` | No | Vercel KV token |
 
 See [.env.example](.env.example) for detailed setup instructions.
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Fork this repository
-2. Import it in [Vercel](https://vercel.com/new)
-3. Add your `GEMINI_API_KEY` in the Environment Variables section
-4. Deploy!
-
-### Self-Hosted
-
-```bash
-npm run build
-```
-
-The output in `dist/` can be served by any static file server. Note that the sharing feature requires Vercel KV.
 
 ## Tech Stack
 
