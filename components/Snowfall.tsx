@@ -36,15 +36,17 @@ export const Snowfall: React.FC<SnowfallProps> = ({ count = 50 }) => {
         <div
           key={flake.id}
           className="snowflake"
-          style={{
-            left: `${flake.x}%`,
-            width: `${flake.size}px`,
-            height: `${flake.size}px`,
-            opacity: flake.opacity,
-            animationDuration: `${flake.duration}s`,
-            animationDelay: `${flake.delay}s`,
-            '--drift': `${flake.drift}px`,
-          } as React.CSSProperties}
+          style={
+            {
+              left: `${flake.x}%`,
+              width: `${flake.size}px`,
+              height: `${flake.size}px`,
+              opacity: flake.opacity,
+              animationDuration: `${flake.duration}s`,
+              animationDelay: `${flake.delay}s`,
+              '--drift': `${flake.drift}px`,
+            } as React.CSSProperties
+          }
         />
       ))}
       <style>{`

@@ -11,7 +11,7 @@ import { RefreshCw, AlertTriangle } from 'lucide-react';
 const App: React.FC = () => {
   const [step, setStep] = useState<AppStep>(AppStep.UPLOAD);
   const [wrappedData, setWrappedData] = useState<WrappedData | null>(null);
-  const [loadingMsg, setLoadingMsg] = useState<string>("");
+  const [loadingMsg, setLoadingMsg] = useState<string>('');
   const [isSharedView, setIsSharedView] = useState(false);
   const [aiError, setAiError] = useState(false);
   const [pendingAnalytics, setPendingAnalytics] = useState<ChatAnalytics | null>(null);
@@ -26,7 +26,7 @@ const App: React.FC = () => {
       if (match) {
         const reportId = match[1];
         setStep(AppStep.PROCESSING);
-        setLoadingMsg("Loading shared report...");
+        setLoadingMsg('Loading shared report...');
 
         try {
           const response = await fetch(`/api/get-report?id=${reportId}`);
@@ -51,24 +51,27 @@ const App: React.FC = () => {
   }, []);
 
   // Cycling loading messages
-  const loadingMessages = useMemo(() => [
-    "🤖 Asking AI to judge your life choices...",
-    "👀 Reading your texts (yikes)...",
-    "📊 Calculating who ghosts the most...",
-    "🧠 Decoding your late-night typos...",
-    "🍵 Spilling the digital tea...",
-    "🕵️‍♂️ Investigating emoji overuse...",
-    "💀 Analyzing your 'lol' vs real laughter ratio...",
-    "💅 Assessing the group chat vibe...",
-    "📉 Measuring productivity lost to this chat..."
-  ], []);
+  const loadingMessages = useMemo(
+    () => [
+      '🤖 Asking AI to judge your life choices...',
+      '👀 Reading your texts (yikes)...',
+      '📊 Calculating who ghosts the most...',
+      '🧠 Decoding your late-night typos...',
+      '🍵 Spilling the digital tea...',
+      '🕵️‍♂️ Investigating emoji overuse...',
+      "💀 Analyzing your 'lol' vs real laughter ratio...",
+      '💅 Assessing the group chat vibe...',
+      '📉 Measuring productivity lost to this chat...',
+    ],
+    []
+  );
 
   useEffect(() => {
     let interval: string | number | NodeJS.Timeout | undefined;
     if (step === AppStep.PROCESSING && !aiError) {
       // Don't override the initial "Parsing..." or "Crunching..." messages immediately
       // Only cycle when we hit the AI stage
-      if (loadingMsg.includes("AI") || loadingMsg.includes("Reading")) {
+      if (loadingMsg.includes('AI') || loadingMsg.includes('Reading')) {
         let i = 0;
         interval = setInterval(() => {
           setLoadingMsg(loadingMessages[i]);
@@ -84,19 +87,19 @@ const App: React.FC = () => {
       setStep(AppStep.PROCESSING);
       setAiError(false);
 
-      setLoadingMsg("Parsing chat file...");
+      setLoadingMsg('Parsing chat file...');
       const allMessages = await parseChatFile(file);
 
       // Filter strictly for 2025
-      const messages = allMessages.filter(m => m.date.getFullYear() === 2025);
+      const messages = allMessages.filter((m) => m.date.getFullYear() === 2025);
 
       if (messages.length < 10) {
-        alert("Not enough messages found from 2025 to generate insights (min 10 required).");
+        alert('Not enough messages found from 2025 to generate insights (min 10 required).');
         setStep(AppStep.UPLOAD);
         return;
       }
 
-      setLoadingMsg("Crunching 2025 numbers...");
+      setLoadingMsg('Crunching 2025 numbers...');
       const analytics = analyzeChat(messages);
 
       // Determine group name from filename usually "WhatsApp Chat with GroupName.txt"
@@ -105,15 +108,15 @@ const App: React.FC = () => {
         analytics.groupName = fileNameMatch[1];
       }
 
-      // Filter out only media placeholders. 
+      // Filter out only media placeholders.
       // We keep short messages ("lol", "ok") as they are crucial for the "Vibe" analysis.
-      const fullHistory = messages.filter(m => !m.isMedia);
+      const fullHistory = messages.filter((m) => !m.isMedia);
 
       // Store pending data for potential retry
       setPendingAnalytics(analytics);
       setPendingMessages(fullHistory);
 
-      setLoadingMsg("🤖 Asking AI to judge your life choices..."); // Start the cycle
+      setLoadingMsg('🤖 Asking AI to judge your life choices...'); // Start the cycle
 
       const aiContent = await generateAIInsights(analytics, fullHistory);
 
@@ -125,7 +128,7 @@ const App: React.FC = () => {
 
       setWrappedData({
         analytics,
-        aiContent
+        aiContent,
       });
 
       setStep(AppStep.RESULTS);
@@ -143,7 +146,7 @@ const App: React.FC = () => {
     }
 
     setAiError(false);
-    setLoadingMsg("🔄 Retrying AI analysis...");
+    setLoadingMsg('🔄 Retrying AI analysis...');
 
     const aiContent = await generateAIInsights(pendingAnalytics, pendingMessages);
 
@@ -154,7 +157,7 @@ const App: React.FC = () => {
 
     setWrappedData({
       analytics: pendingAnalytics,
-      aiContent
+      aiContent,
     });
 
     setStep(AppStep.RESULTS);
@@ -179,13 +182,15 @@ const App: React.FC = () => {
           <div className="absolute inset-0">
             {/* Gradient orbs */}
             <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+            <div
+              className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] animate-pulse"
+              style={{ animationDelay: '1s' }}
+            />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-600/10 rounded-full blur-[150px]" />
           </div>
 
           {/* Content */}
           <div className="relative z-10 h-full flex flex-col justify-center px-6 safe-top safe-bottom overflow-y-auto no-scrollbar">
-
             {/* SECTION 1: Title & Tagline */}
             <div className="text-center pt-12 pb-6 md:pb-10 animate-slide-up">
               <div className="inline-block px-4 py-2 glass rounded-full text-xs font-bold uppercase tracking-widest mb-6">
@@ -193,7 +198,9 @@ const App: React.FC = () => {
               </div>
 
               <h1 className="text-5xl md:text-6xl font-black font-display gradient-text leading-tight mb-4">
-                WhatsApp<br />Wrapped
+                WhatsApp
+                <br />
+                Wrapped
               </h1>
 
               <p className="text-base text-white/60 max-w-sm mx-auto">
@@ -206,14 +213,38 @@ const App: React.FC = () => {
               <div className="marquee-track">
                 <div className="marquee-content">
                   {[
-                    { emoji: '🎖️', text: 'Personalized badges for every member', color: 'text-amber-400' },
-                    { emoji: '💬', text: 'Iconic quotes you can\'t unsend', color: 'text-pink-400' },
-                    { emoji: '🔮', text: 'AI predictions for your group', color: 'text-purple-400' },
-                    { emoji: '📊', text: 'Who messages too much (spoiler: it\'s you)', color: 'text-cyan-400' },
-                    { emoji: '🎭', text: 'Your group vibe, brutally analyzed', color: 'text-green-400' },
-                    { emoji: '🏆', text: 'Night owls vs. early birds exposed', color: 'text-yellow-400' },
+                    {
+                      emoji: '🎖️',
+                      text: 'Personalized badges for every member',
+                      color: 'text-amber-400',
+                    },
+                    { emoji: '💬', text: "Iconic quotes you can't unsend", color: 'text-pink-400' },
+                    {
+                      emoji: '🔮',
+                      text: 'AI predictions for your group',
+                      color: 'text-purple-400',
+                    },
+                    {
+                      emoji: '📊',
+                      text: "Who messages too much (spoiler: it's you)",
+                      color: 'text-cyan-400',
+                    },
+                    {
+                      emoji: '🎭',
+                      text: 'Your group vibe, brutally analyzed',
+                      color: 'text-green-400',
+                    },
+                    {
+                      emoji: '🏆',
+                      text: 'Night owls vs. early birds exposed',
+                      color: 'text-yellow-400',
+                    },
                     { emoji: '💥', text: 'Most chaotic moments of 2025', color: 'text-red-400' },
-                    { emoji: '🗣️', text: 'Topics you won\'t shut up about', color: 'text-orange-400' },
+                    {
+                      emoji: '🗣️',
+                      text: "Topics you won't shut up about",
+                      color: 'text-orange-400',
+                    },
                   ].map((item, i) => (
                     <div
                       key={`a-${i}`}
@@ -226,14 +257,38 @@ const App: React.FC = () => {
                 </div>
                 <div className="marquee-content" aria-hidden="true">
                   {[
-                    { emoji: '🎖️', text: 'Personalized badges for every member', color: 'text-amber-400' },
-                    { emoji: '💬', text: 'Iconic quotes you can\'t unsend', color: 'text-pink-400' },
-                    { emoji: '🔮', text: 'AI predictions for your group', color: 'text-purple-400' },
-                    { emoji: '📊', text: 'Who messages too much (spoiler: it\'s you)', color: 'text-cyan-400' },
-                    { emoji: '🎭', text: 'Your group vibe, brutally analyzed', color: 'text-green-400' },
-                    { emoji: '🏆', text: 'Night owls vs. early birds exposed', color: 'text-yellow-400' },
+                    {
+                      emoji: '🎖️',
+                      text: 'Personalized badges for every member',
+                      color: 'text-amber-400',
+                    },
+                    { emoji: '💬', text: "Iconic quotes you can't unsend", color: 'text-pink-400' },
+                    {
+                      emoji: '🔮',
+                      text: 'AI predictions for your group',
+                      color: 'text-purple-400',
+                    },
+                    {
+                      emoji: '📊',
+                      text: "Who messages too much (spoiler: it's you)",
+                      color: 'text-cyan-400',
+                    },
+                    {
+                      emoji: '🎭',
+                      text: 'Your group vibe, brutally analyzed',
+                      color: 'text-green-400',
+                    },
+                    {
+                      emoji: '🏆',
+                      text: 'Night owls vs. early birds exposed',
+                      color: 'text-yellow-400',
+                    },
                     { emoji: '💥', text: 'Most chaotic moments of 2025', color: 'text-red-400' },
-                    { emoji: '🗣️', text: 'Topics you won\'t shut up about', color: 'text-orange-400' },
+                    {
+                      emoji: '🗣️',
+                      text: "Topics you won't shut up about",
+                      color: 'text-orange-400',
+                    },
                   ].map((item, i) => (
                     <div
                       key={`b-${i}`}
@@ -259,7 +314,9 @@ const App: React.FC = () => {
             {/* Creator Credits */}
             <div className="text-center py-4 animate-fade-in stagger-3">
               <div className="text-xs text-white/30">
-                Created by <span className="text-white/50">Jeffrey</span>, <span className="text-purple-400/70">Claude</span> & <span className="text-blue-400/70">Gemini</span>
+                Created by <span className="text-white/50">Jeffrey</span>,{' '}
+                <span className="text-purple-400/70">Claude</span> &{' '}
+                <span className="text-blue-400/70">Gemini</span>
               </div>
             </div>
           </div>
@@ -281,7 +338,7 @@ const App: React.FC = () => {
                       setWrappedData(json);
                       setStep(AppStep.RESULTS);
                     } catch (err) {
-                      alert("Invalid JSON");
+                      alert('Invalid JSON');
                     }
                   };
                   reader.readAsText(file);
@@ -296,7 +353,9 @@ const App: React.FC = () => {
         <div className="h-full w-full flex flex-col items-center justify-center relative">
           {/* Background */}
           <div className="absolute inset-0">
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 ${aiError ? 'bg-red-600/30' : 'bg-purple-600/30'} rounded-full blur-[100px] animate-pulse`} />
+            <div
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 ${aiError ? 'bg-red-600/30' : 'bg-purple-600/30'} rounded-full blur-[100px] animate-pulse`}
+            />
           </div>
 
           {/* Content */}
@@ -308,9 +367,12 @@ const App: React.FC = () => {
                   <AlertTriangle size={64} className="text-red-400" />
                 </div>
 
-                <h2 className="text-2xl font-bold font-display mb-3 text-red-400">AI Analysis Failed</h2>
+                <h2 className="text-2xl font-bold font-display mb-3 text-red-400">
+                  AI Analysis Failed
+                </h2>
                 <p className="text-sm text-white/50 mb-8 max-w-xs mx-auto">
-                  The AI service is temporarily unavailable. Your data is saved — you can retry without re-uploading.
+                  The AI service is temporarily unavailable. Your data is saved — you can retry
+                  without re-uploading.
                 </p>
 
                 {/* Retry Button */}
@@ -338,14 +400,17 @@ const App: React.FC = () => {
                 <div className="relative w-20 h-20 mx-auto mb-8">
                   <div className="absolute inset-0 rounded-full border-4 border-white/10" />
                   <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin" />
-                  <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }} />
+                  <div
+                    className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin"
+                    style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}
+                  />
                 </div>
 
                 <h2 className="text-2xl font-bold font-display mb-3 animate-pulse">{loadingMsg}</h2>
 
                 {/* Progress dots */}
                 <div className="flex justify-center gap-2 mt-8">
-                  {[0, 1, 2].map(i => (
+                  {[0, 1, 2].map((i) => (
                     <div
                       key={i}
                       className="w-2 h-2 rounded-full bg-white/30 animate-bounce"

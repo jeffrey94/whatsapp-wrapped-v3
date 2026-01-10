@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type } from '@google/genai';
 import { ChatAnalytics, Message, AIGeneratedContent } from '../types';
 
 export const generateAIInsights = async (
@@ -8,23 +8,23 @@ export const generateAIInsights = async (
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    console.warn("No API Key provided for Gemini");
+    console.warn('No API Key provided for Gemini');
     return null;
   }
 
   const ai = new GoogleGenAI({ apiKey });
 
   // 1. Context Preparation
-  const topParticipants = analytics.participants.slice(0, 5).map(p => ({
+  const topParticipants = analytics.participants.slice(0, 5).map((p) => ({
     name: p.name,
     count: p.messageCount,
-    favHour: p.activeHour
+    favHour: p.activeHour,
   }));
 
   // 2. Full Timeline Preparation (capped)
   // Optimization: Map author names to short IDs (P1, P2, etc.) to save tokens
   const authorMap = new Map<string, string>();
-  const authors = Array.from(new Set(messages.map(m => m.author)));
+  const authors = Array.from(new Set(messages.map((m) => m.author)));
   authors.forEach((author, index) => {
     authorMap.set(author, `P${index + 1}`);
   });
@@ -49,7 +49,10 @@ export const generateAIInsights = async (
     .join('\n');
 
   // 3. Raw frequent words (top 100) for AI filtering
-  const rawFreqWords = analytics.topWords.slice(0, 100).map(w => w.text).join(", ");
+  const rawFreqWords = analytics.topWords
+    .slice(0, 100)
+    .map((w) => w.text)
+    .join(', ');
 
   const prompt = `
     Analyze this WhatsApp group chat timeline from 2025.
@@ -101,8 +104,8 @@ export const generateAIInsights = async (
                 type: Type.OBJECT,
                 properties: {
                   vibe: { type: Type.STRING },
-                  values: { type: Type.STRING }
-                }
+                  values: { type: Type.STRING },
+                },
               },
               memorableMoments: {
                 type: Type.ARRAY,
@@ -111,8 +114,8 @@ export const generateAIInsights = async (
                   properties: {
                     title: { type: Type.STRING },
                     description: { type: Type.STRING },
-                  }
-                }
+                  },
+                },
               },
               badges: {
                 type: Type.ARRAY,
@@ -122,9 +125,9 @@ export const generateAIInsights = async (
                     memberName: { type: Type.STRING },
                     badgeTitle: { type: Type.STRING },
                     badgeDescription: { type: Type.STRING },
-                    emoji: { type: Type.STRING }
-                  }
-                }
+                    emoji: { type: Type.STRING },
+                  },
+                },
               },
               topics: {
                 type: Type.ARRAY,
@@ -134,13 +137,13 @@ export const generateAIInsights = async (
                     name: { type: Type.STRING },
                     description: { type: Type.STRING },
                     percentage: { type: Type.STRING },
-                    ledBy: { type: Type.STRING }
-                  }
-                }
+                    ledBy: { type: Type.STRING },
+                  },
+                },
               },
               predictions: {
                 type: Type.ARRAY,
-                items: { type: Type.STRING }
+                items: { type: Type.STRING },
               },
               participantQuotes: {
                 type: Type.ARRAY,
@@ -148,18 +151,18 @@ export const generateAIInsights = async (
                   type: Type.OBJECT,
                   properties: {
                     name: { type: Type.STRING },
-                    quote: { type: Type.STRING }
-                  }
-                }
+                    quote: { type: Type.STRING },
+                  },
+                },
               },
               wordCloud: {
                 type: Type.ARRAY,
-                items: { type: Type.STRING }
+                items: { type: Type.STRING },
               },
-              signOffMessage: { type: Type.STRING }
-            }
-          }
-        }
+              signOffMessage: { type: Type.STRING },
+            },
+          },
+        },
       });
 
       if (response.text) {
@@ -177,7 +180,7 @@ export const generateAIInsights = async (
 
         // Validate required fields exist
         const requiredFields = ['badges', 'memorableMoments', 'predictions', 'wordCloud'];
-        const missingFields = requiredFields.filter(f => !parsed[f as keyof AIGeneratedContent]);
+        const missingFields = requiredFields.filter((f) => !parsed[f as keyof AIGeneratedContent]);
 
         if (missingFields.length > 0) {
           console.error('Missing required fields:', missingFields);
@@ -190,13 +193,12 @@ export const generateAIInsights = async (
 
       // If no text, treat as failure and retry
       throw new Error('Empty response from AI');
-
     } catch (error) {
       console.error(`AI attempt ${attempt} failed:`, error);
 
       if (attempt < MAX_RETRIES) {
         console.log(`Retrying in ${RETRY_DELAY / 1000} seconds...`);
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
       }
     }
   }

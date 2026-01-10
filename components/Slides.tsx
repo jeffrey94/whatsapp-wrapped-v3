@@ -1,10 +1,44 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { WrappedData, ParticipantStats } from '../types';
-import { BarChart, Bar, ResponsiveContainer, AreaChart, Area, Cell, XAxis, Tooltip } from 'recharts';
 import {
-  Clock, Calendar, Trophy, Heart, Quote, Sparkles, Flame, Users, Zap, Brain,
-  MessageSquare, ArrowRight, Play, Star, Moon, Sun, Sunrise, Sunset, Coffee,
-  Share2, Activity, Crown, TrendingUp, Award, Hash, Smile, CalendarDays, ChevronUp
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  Cell,
+  XAxis,
+  Tooltip,
+} from 'recharts';
+import {
+  Clock,
+  Calendar,
+  Trophy,
+  Heart,
+  Quote,
+  Sparkles,
+  Flame,
+  Users,
+  Zap,
+  Brain,
+  MessageSquare,
+  ArrowRight,
+  Play,
+  Star,
+  Moon,
+  Sun,
+  Sunrise,
+  Sunset,
+  Coffee,
+  Share2,
+  Activity,
+  Crown,
+  TrendingUp,
+  Award,
+  Hash,
+  Smile,
+  CalendarDays,
+  ChevronUp,
 } from 'lucide-react';
 
 interface SlideProps {
@@ -21,10 +55,15 @@ const SlideContainer: React.FC<{
   gradient?: string;
   className?: string;
 }> = ({ children, gradient = 'from-purple-900 via-indigo-900 to-slate-900', className = '' }) => (
-  <div className={`relative w-full min-h-full flex flex-col bg-gradient-to-br ${gradient} ${className}`}>
+  <div
+    className={`relative w-full min-h-full flex flex-col bg-gradient-to-br ${gradient} ${className}`}
+  >
     {/* Ambient orbs */}
     <div className="absolute top-0 left-0 w-72 h-72 bg-purple-500/20 rounded-full blur-[100px] animate-pulse-glow" />
-    <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/20 rounded-full blur-[100px] animate-pulse-glow" style={{ animationDelay: '1s' }} />
+    <div
+      className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/20 rounded-full blur-[100px] animate-pulse-glow"
+      style={{ animationDelay: '1s' }}
+    />
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-[120px]" />
 
     {/* Noise texture */}
@@ -63,7 +102,10 @@ const StatCard: React.FC<{
   </div>
 );
 
-const AnimatedCounter: React.FC<{ end: number; duration?: number }> = ({ end, duration = 2000 }) => {
+const AnimatedCounter: React.FC<{ end: number; duration?: number }> = ({
+  end,
+  duration = 2000,
+}) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -99,7 +141,6 @@ export const IntroSlide: React.FC<SlideProps> = ({ data }) => {
   return (
     <SlideContainer gradient="from-black via-slate-900 to-black">
       <div className="flex-1 flex flex-col items-center justify-center text-center">
-
         {/* Animated emoji rain effect */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {['💬', '🔥', '😂', '💀', '🙈', '👀', '🎉', '💯'].map((emoji, i) => (
@@ -109,7 +150,7 @@ export const IntroSlide: React.FC<SlideProps> = ({ data }) => {
               style={{
                 left: `${10 + i * 12}%`,
                 animationDelay: `${i * 0.3}s`,
-                animationDuration: `${3 + (i % 3)}s`
+                animationDuration: `${3 + (i % 3)}s`,
               }}
             >
               {emoji}
@@ -126,12 +167,15 @@ export const IntroSlide: React.FC<SlideProps> = ({ data }) => {
 
           {/* Title */}
           <h1 className="text-4xl font-black font-display gradient-text leading-tight mb-6 animate-slide-up stagger-1">
-            Ready to be judged<br />by your own chat?
+            Ready to be judged
+            <br />
+            by your own chat?
           </h1>
 
           {/* Subtitle */}
           <p className="text-lg text-white/60 max-w-xs mx-auto leading-relaxed animate-slide-up stagger-2">
-            You and <span className="text-white font-bold">{memberCount - 1} others</span> sent enough messages to fill a novel.
+            You and <span className="text-white font-bold">{memberCount - 1} others</span> sent
+            enough messages to fill a novel.
           </p>
 
           <p className="text-sm text-white/40 mt-4 italic animate-slide-up stagger-3">
@@ -140,7 +184,9 @@ export const IntroSlide: React.FC<SlideProps> = ({ data }) => {
 
           {/* CTA hint */}
           <div className="mt-12 animate-bounce">
-            <div className="text-xs text-white/30 uppercase tracking-widest mb-2">Swipe up to begin</div>
+            <div className="text-xs text-white/30 uppercase tracking-widest mb-2">
+              Swipe up to begin
+            </div>
             <ChevronUp className="w-6 h-6 text-white/40 mx-auto" />
           </div>
         </div>
@@ -156,12 +202,14 @@ export const IntroSlide: React.FC<SlideProps> = ({ data }) => {
 export const CoverSlide: React.FC<SlideProps> = ({ data }) => {
   const { analytics, aiContent } = data;
   const participants = analytics.participants;
-  const topNames = participants.slice(0, 4).map(p => p.name.split(' ')[0]).join(' • ');
+  const topNames = participants
+    .slice(0, 4)
+    .map((p) => p.name.split(' ')[0])
+    .join(' • ');
 
   return (
     <SlideContainer gradient="from-violet-900 via-purple-900 to-indigo-900">
       <div className="flex-1 flex flex-col justify-center">
-
         {/* Year badge */}
         <div className="text-center mb-4">
           <div className="inline-block glass px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest animate-slide-up">
@@ -171,7 +219,7 @@ export const CoverSlide: React.FC<SlideProps> = ({ data }) => {
 
         {/* Main title */}
         <h1 className="text-4xl font-black font-display gradient-text leading-[1.1] text-center px-4 animate-slide-up stagger-1">
-          {analytics.groupName || "Your Group Chat"}
+          {analytics.groupName || 'Your Group Chat'}
         </h1>
 
         {/* Stats row */}
@@ -207,11 +255,17 @@ export const CoverSlide: React.FC<SlideProps> = ({ data }) => {
         {aiContent?.groupPersonality?.values && (
           <div className="mt-4 text-center animate-slide-up stagger-4">
             <div className="inline-flex flex-wrap justify-center gap-2 px-4">
-              {aiContent.groupPersonality.values.split(',').slice(0, 4).map((value, i) => (
-                <span key={i} className="glass px-3 py-1 rounded-full text-xs text-purple-300 font-medium">
-                  {value.trim()}
-                </span>
-              ))}
+              {aiContent.groupPersonality.values
+                .split(',')
+                .slice(0, 4)
+                .map((value, i) => (
+                  <span
+                    key={i}
+                    className="glass px-3 py-1 rounded-full text-xs text-purple-300 font-medium"
+                  >
+                    {value.trim()}
+                  </span>
+                ))}
             </div>
           </div>
         )}
@@ -242,16 +296,14 @@ export const OverviewSlide: React.FC<SlideProps> = ({ data }) => {
   const { analytics, aiContent } = data;
   const { participants, messagesByHour } = analytics;
 
-  const nightOwl = participants.find(p => p.chronotype?.label === 'Night Owl') || participants[1];
-  const earlyBird = participants.find(p => p.chronotype?.label === 'Early Bird') || participants[2];
+  const nightOwl = participants.find((p) => p.chronotype?.label === 'Night Owl') || participants[1];
+  const earlyBird =
+    participants.find((p) => p.chronotype?.label === 'Early Bird') || participants[2];
   const yapper = participants[0];
 
   return (
     <SlideContainer gradient="from-cyan-900 via-blue-900 to-indigo-900">
-      <SectionTitle
-        title="Vibe Check"
-        subtitle="The personalities that define you"
-      />
+      <SectionTitle title="Vibe Check" subtitle="The personalities that define you" />
 
       <div className="flex-1 space-y-3">
         {/* Night Owl */}
@@ -260,8 +312,10 @@ export const OverviewSlide: React.FC<SlideProps> = ({ data }) => {
             🦉
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-wider text-indigo-300/70 font-bold">Night Owl</div>
-            <div className="font-bold truncate">{nightOwl?.name || "Unknown"}</div>
+            <div className="text-[10px] uppercase tracking-wider text-indigo-300/70 font-bold">
+              Night Owl
+            </div>
+            <div className="font-bold truncate">{nightOwl?.name || 'Unknown'}</div>
             <div className="text-[10px] text-white/40">Active 11PM - 5AM</div>
           </div>
         </div>
@@ -272,8 +326,10 @@ export const OverviewSlide: React.FC<SlideProps> = ({ data }) => {
             🌅
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-wider text-orange-300/70 font-bold">Early Bird</div>
-            <div className="font-bold truncate">{earlyBird?.name || "Unknown"}</div>
+            <div className="text-[10px] uppercase tracking-wider text-orange-300/70 font-bold">
+              Early Bird
+            </div>
+            <div className="font-bold truncate">{earlyBird?.name || 'Unknown'}</div>
             <div className="text-[10px] text-white/40">Active 5AM - 10AM</div>
           </div>
         </div>
@@ -284,15 +340,21 @@ export const OverviewSlide: React.FC<SlideProps> = ({ data }) => {
             🗣️
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[10px] uppercase tracking-wider text-pink-300/70 font-bold">Chief Yapper</div>
-            <div className="font-bold truncate">{yapper?.name || "Unknown"}</div>
-            <div className="text-[10px] text-white/40">{yapper?.messageCount.toLocaleString()} messages</div>
+            <div className="text-[10px] uppercase tracking-wider text-pink-300/70 font-bold">
+              Chief Yapper
+            </div>
+            <div className="font-bold truncate">{yapper?.name || 'Unknown'}</div>
+            <div className="text-[10px] text-white/40">
+              {yapper?.messageCount.toLocaleString()} messages
+            </div>
           </div>
         </div>
 
         {/* Daily Rhythm Chart */}
         <div className="glass rounded-2xl p-4 mt-4 animate-slide-up stagger-3">
-          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">Daily Rhythm</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">
+            Daily Rhythm
+          </div>
           <div className="h-24" style={{ minWidth: 0, minHeight: 96 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <AreaChart data={messagesByHour.map((count, hour) => ({ hour, count }))}>
@@ -330,7 +392,7 @@ export const OverviewSlide: React.FC<SlideProps> = ({ data }) => {
 
 export const VocabularySlide: React.FC<SlideProps> = ({ data }) => {
   const { analytics, aiContent } = data;
-  const words = aiContent?.wordCloud || analytics.topWords.slice(0, 30).map(w => w.text);
+  const words = aiContent?.wordCloud || analytics.topWords.slice(0, 30).map((w) => w.text);
 
   return (
     <SlideContainer gradient="from-fuchsia-900 via-purple-900 to-violet-900">
@@ -344,7 +406,7 @@ export const VocabularySlide: React.FC<SlideProps> = ({ data }) => {
         {words.slice(0, 35).map((word, i) => {
           const size = 0.8 + (Math.sin(i * 99) * 0.5 + 0.5) * 1.2;
           const opacity = 0.5 + (size / 2) * 0.5;
-          const rotation = (i % 3 === 0) ? -3 : (i % 2 === 0) ? 3 : 0;
+          const rotation = i % 3 === 0 ? -3 : i % 2 === 0 ? 3 : 0;
 
           return (
             <span
@@ -354,7 +416,7 @@ export const VocabularySlide: React.FC<SlideProps> = ({ data }) => {
                 fontSize: `${size}rem`,
                 opacity,
                 transform: `rotate(${rotation}deg)`,
-                animationDelay: `${i * 30}ms`
+                animationDelay: `${i * 30}ms`,
               }}
             >
               {word}
@@ -416,7 +478,20 @@ export const ActivitySlide: React.FC<SlideProps> = ({ data }) => {
   const { messagesByDay, messagesByMonth } = analytics;
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
 
   const maxDay = Math.max(...messagesByDay);
   const maxMonth = Math.max(...messagesByMonth);
@@ -436,26 +511,35 @@ export const ActivitySlide: React.FC<SlideProps> = ({ data }) => {
         <div className="grid grid-cols-2 gap-3 animate-slide-up">
           <div className="glass rounded-2xl p-4 text-center">
             <div className="text-2xl font-bold text-emerald-400">{busiestDay}</div>
-            <div className="text-[10px] uppercase tracking-wider text-white/50 mt-1">Busiest Day</div>
+            <div className="text-[10px] uppercase tracking-wider text-white/50 mt-1">
+              Busiest Day
+            </div>
           </div>
           <div className="glass rounded-2xl p-4 text-center">
             <div className="text-2xl font-bold text-cyan-400">{busiestMonth}</div>
-            <div className="text-[10px] uppercase tracking-wider text-white/50 mt-1">Peak Month</div>
+            <div className="text-[10px] uppercase tracking-wider text-white/50 mt-1">
+              Peak Month
+            </div>
           </div>
         </div>
 
         {/* Day of Week */}
         <div className="glass rounded-2xl p-4 animate-slide-up stagger-1">
-          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">By Day of Week</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">
+            By Day of Week
+          </div>
           <div className="flex justify-between gap-1">
             {messagesByDay.map((count, i) => (
               <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full bg-white/10 rounded-full overflow-hidden" style={{ height: '80px' }}>
+                <div
+                  className="w-full bg-white/10 rounded-full overflow-hidden"
+                  style={{ height: '80px' }}
+                >
                   <div
                     className="w-full bg-gradient-to-t from-emerald-500 to-teal-400 rounded-full transition-all duration-1000"
                     style={{
                       height: `${(count / maxDay) * 100}%`,
-                      marginTop: `${100 - (count / maxDay) * 100}%`
+                      marginTop: `${100 - (count / maxDay) * 100}%`,
                     }}
                   />
                 </div>
@@ -467,7 +551,9 @@ export const ActivitySlide: React.FC<SlideProps> = ({ data }) => {
 
         {/* Monthly */}
         <div className="glass rounded-2xl p-4 animate-slide-up stagger-2">
-          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">By Month</div>
+          <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-3">
+            By Month
+          </div>
           <div className="h-20" style={{ minWidth: 0, minHeight: 80 }}>
             <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <BarChart data={messagesByMonth.map((count, i) => ({ month: months[i], count }))}>
@@ -498,7 +584,9 @@ export const HeatmapSlide: React.FC<SlideProps> = ({ data }) => {
   const maxVal = Math.max(...heatmap.flat());
 
   // Find peak time
-  let peakDay = 0, peakHour = 0, peakVal = 0;
+  let peakDay = 0,
+    peakHour = 0,
+    peakVal = 0;
   heatmap.forEach((row, d) => {
     row.forEach((val, h) => {
       if (val > peakVal) {
@@ -547,17 +635,17 @@ export const HeatmapSlide: React.FC<SlideProps> = ({ data }) => {
 
             {/* Heatmap */}
             <div className="grid grid-cols-24 gap-[2px]">
-              {heatmap.map((row, dayIdx) => (
+              {heatmap.map((row, dayIdx) =>
                 row.map((val, hourIdx) => (
                   <div
                     key={`${dayIdx}-${hourIdx}`}
                     className="aspect-square rounded-sm transition-colors"
                     style={{
-                      backgroundColor: `rgba(251, 113, 133, ${Math.min(0.2 + (val / maxVal) * 0.8, 1)})`
+                      backgroundColor: `rgba(251, 113, 133, ${Math.min(0.2 + (val / maxVal) * 0.8, 1)})`,
                     }}
                   />
                 ))
-              ))}
+              )}
             </div>
           </div>
 
@@ -583,7 +671,11 @@ interface PersonalStatsSlideProps extends SlideProps {
   startRank?: number;
 }
 
-export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({ data, items, startRank = 0 }) => {
+export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({
+  data,
+  items,
+  startRank = 0,
+}) => {
   const participants = items || data.analytics.participants.slice(0, 3);
   const quotes = data.aiContent?.participantQuotes || [];
   const allParticipants = data.analytics.participants;
@@ -592,7 +684,7 @@ export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({ data, it
   return (
     <SlideContainer gradient="from-pink-900 via-rose-900 to-red-900">
       <SectionTitle
-        title={startRank === 0 ? "Top Chatters" : "Rankings"}
+        title={startRank === 0 ? 'Top Chatters' : 'Rankings'}
         subtitle="Who carried the conversation?"
         icon={<Trophy className="w-8 h-8 text-yellow-400" />}
       />
@@ -600,7 +692,7 @@ export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({ data, it
       <div className="flex-1 space-y-4">
         {participants.map((p: ParticipantStats, i: number) => {
           const globalRank = startRank + i;
-          const userQuote = quotes.find(q => q.name === p.name)?.quote;
+          const userQuote = quotes.find((q) => q.name === p.name)?.quote;
           const isFirst = globalRank === 0;
 
           return (
@@ -610,7 +702,9 @@ export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({ data, it
               style={{ animationDelay: `${i * 80}ms` }}
             >
               {/* Main Card */}
-              <div className={`glass rounded-2xl p-4 relative overflow-hidden ${isFirst ? 'ring-2 ring-yellow-400/50' : ''}`}>
+              <div
+                className={`glass rounded-2xl p-4 relative overflow-hidden ${isFirst ? 'ring-2 ring-yellow-400/50' : ''}`}
+              >
                 {/* Progress bar bg */}
                 <div
                   className="absolute inset-0 bg-gradient-to-r from-white/5 to-transparent"
@@ -619,8 +713,11 @@ export const PersonalStatsSlide: React.FC<PersonalStatsSlideProps> = ({ data, it
 
                 <div className="relative flex items-center gap-3">
                   {/* Rank */}
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 ${isFirst ? 'bg-yellow-400 text-black' : 'bg-white/10'
-                    }`}>
+                  <div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shrink-0 ${
+                      isFirst ? 'bg-yellow-400 text-black' : 'bg-white/10'
+                    }`}
+                  >
                     #{globalRank + 1}
                   </div>
 
@@ -668,7 +765,12 @@ interface MomentSlideProps extends SlideProps {
   totalMoments?: number;
 }
 
-export const MomentSlide: React.FC<MomentSlideProps> = ({ data, items, momentIndex = 0, totalMoments = 1 }) => {
+export const MomentSlide: React.FC<MomentSlideProps> = ({
+  data,
+  items,
+  momentIndex = 0,
+  totalMoments = 1,
+}) => {
   const moments = items || data.aiContent?.memorableMoments || [];
   const moment = moments[0];
 
@@ -686,7 +788,6 @@ export const MomentSlide: React.FC<MomentSlideProps> = ({ data, items, momentInd
   return (
     <SlideContainer gradient="from-violet-900 via-purple-900 to-fuchsia-900">
       <div className="flex-1 flex flex-col justify-center items-center text-center relative">
-
         {/* Large Background Index */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[200px] font-black font-display text-white/[0.03] leading-none pointer-events-none select-none">
           {String(momentIndex + 1).padStart(2, '0')}
@@ -742,33 +843,36 @@ export const TopicsSlide: React.FC<SlideProps> = ({ data, items }) => {
       />
 
       <div className="flex-1 space-y-4">
-        {topics.map((topic: { name: string; description: string; percentage?: string; ledBy?: string }, i: number) => (
-          <div
-            key={i}
-            className="glass rounded-3xl p-5 animate-slide-up"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
-            <div className="flex justify-between items-start gap-3 mb-3">
-              <h3 className="text-lg font-bold leading-tight">{topic.name}</h3>
-              {topic.percentage && (
-                <span className="shrink-0 text-xs bg-white/20 px-3 py-1 rounded-full font-bold">
-                  {topic.percentage}
-                </span>
+        {topics.map(
+          (
+            topic: { name: string; description: string; percentage?: string; ledBy?: string },
+            i: number
+          ) => (
+            <div
+              key={i}
+              className="glass rounded-3xl p-5 animate-slide-up"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex justify-between items-start gap-3 mb-3">
+                <h3 className="text-lg font-bold leading-tight">{topic.name}</h3>
+                {topic.percentage && (
+                  <span className="shrink-0 text-xs bg-white/20 px-3 py-1 rounded-full font-bold">
+                    {topic.percentage}
+                  </span>
+                )}
+              </div>
+
+              <p className="text-sm text-white/70 leading-relaxed mb-3">{topic.description}</p>
+
+              {topic.ledBy && (
+                <div className="flex items-center gap-2 text-xs text-amber-300">
+                  <Crown size={14} />
+                  <span>Led by {topic.ledBy}</span>
+                </div>
               )}
             </div>
-
-            <p className="text-sm text-white/70 leading-relaxed mb-3">
-              {topic.description}
-            </p>
-
-            {topic.ledBy && (
-              <div className="flex items-center gap-2 text-xs text-amber-300">
-                <Crown size={14} />
-                <span>Led by {topic.ledBy}</span>
-              </div>
-            )}
-          </div>
-        ))}
+          )
+        )}
 
         {topics.length === 0 && (
           <div className="text-center text-white/40 py-20">
@@ -795,9 +899,24 @@ export const PredictionSlide: React.FC<SlideProps> = ({ data }) => {
       {/* Mystical star decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 text-2xl opacity-20 animate-pulse">✨</div>
-        <div className="absolute top-20 right-16 text-xl opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}>⭐</div>
-        <div className="absolute bottom-32 left-8 text-lg opacity-20 animate-pulse" style={{ animationDelay: '1s' }}>✨</div>
-        <div className="absolute bottom-20 right-10 text-2xl opacity-25 animate-pulse" style={{ animationDelay: '1.5s' }}>🌟</div>
+        <div
+          className="absolute top-20 right-16 text-xl opacity-30 animate-pulse"
+          style={{ animationDelay: '0.5s' }}
+        >
+          ⭐
+        </div>
+        <div
+          className="absolute bottom-32 left-8 text-lg opacity-20 animate-pulse"
+          style={{ animationDelay: '1s' }}
+        >
+          ✨
+        </div>
+        <div
+          className="absolute bottom-20 right-10 text-2xl opacity-25 animate-pulse"
+          style={{ animationDelay: '1.5s' }}
+        >
+          🌟
+        </div>
       </div>
 
       {/* Crystal Ball Header */}
@@ -811,7 +930,9 @@ export const PredictionSlide: React.FC<SlideProps> = ({ data }) => {
         <h2 className="text-2xl font-black font-display bg-gradient-to-r from-purple-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
           The Oracle Speaks
         </h2>
-        <p className="text-xs text-purple-300/60 mt-1 italic">Rub the cards to reveal your fate...</p>
+        <p className="text-xs text-purple-300/60 mt-1 italic">
+          Rub the cards to reveal your fate...
+        </p>
       </div>
 
       {/* Predictions */}
@@ -880,28 +1001,36 @@ export const BadgesSlide: React.FC<SlideProps> = ({ data, items }) => {
       />
 
       <div className="flex-1 space-y-4">
-        {badges.map((badge: { memberName: string; badgeTitle: string; badgeDescription: string; emoji: string }, i: number) => (
-          <div
-            key={i}
-            className="glass rounded-3xl p-5 animate-slide-up"
-            style={{ animationDelay: `${i * 100}ms` }}
-          >
-            <div className="flex items-start gap-4">
-              <div className="text-4xl shrink-0">{badge.emoji}</div>
-              <div className="flex-1 min-w-0">
-                <div className="text-xs text-white/50 uppercase tracking-wider mb-1">
-                  {badge.memberName}
+        {badges.map(
+          (
+            badge: {
+              memberName: string;
+              badgeTitle: string;
+              badgeDescription: string;
+              emoji: string;
+            },
+            i: number
+          ) => (
+            <div
+              key={i}
+              className="glass rounded-3xl p-5 animate-slide-up"
+              style={{ animationDelay: `${i * 100}ms` }}
+            >
+              <div className="flex items-start gap-4">
+                <div className="text-4xl shrink-0">{badge.emoji}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-white/50 uppercase tracking-wider mb-1">
+                    {badge.memberName}
+                  </div>
+                  <h3 className="text-xl font-black font-display text-yellow-300 mb-2">
+                    {badge.badgeTitle}
+                  </h3>
+                  <p className="text-sm text-white/70 leading-relaxed">{badge.badgeDescription}</p>
                 </div>
-                <h3 className="text-xl font-black font-display text-yellow-300 mb-2">
-                  {badge.badgeTitle}
-                </h3>
-                <p className="text-sm text-white/70 leading-relaxed">
-                  {badge.badgeDescription}
-                </p>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
 
         {badges.length === 0 && (
           <div className="text-center text-white/40 py-20">
@@ -922,12 +1051,13 @@ export const BadgesSlide: React.FC<SlideProps> = ({ data, items }) => {
 export const ThankYouSlide: React.FC<SlideProps> = ({ data }) => {
   const { aiContent } = data;
 
-  const signOff = aiContent?.signOffMessage || "Here's to another year of chaos, questionable life choices, and way too many notifications. You made it.";
+  const signOff =
+    aiContent?.signOffMessage ||
+    "Here's to another year of chaos, questionable life choices, and way too many notifications. You made it.";
 
   return (
     <SlideContainer gradient="from-amber-900 via-orange-900 to-rose-900">
       <div className="flex-1 flex flex-col items-center justify-center text-center">
-
         {/* Heart icon */}
         <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center mb-8 animate-float shadow-2xl shadow-white/20">
           <Heart className="w-12 h-12 text-rose-500 fill-current" />
@@ -945,7 +1075,9 @@ export const ThankYouSlide: React.FC<SlideProps> = ({ data }) => {
 
         {/* Branding */}
         <div className="mt-16 animate-fade-in stagger-3">
-          <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">Created with</div>
+          <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">
+            Created with
+          </div>
           <div className="font-display text-xl font-bold gradient-text">WhatsApp Wrapped</div>
           <div className="text-xs text-white/40 mt-2">2025 Edition</div>
         </div>
