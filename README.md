@@ -1,6 +1,3 @@
-<div align="center">
-<img width="1200" alt="WhatsApp Wrapped Banner" src="docs/images/banner.png" />
-
 # WhatsApp Wrapped
 
 **Generate a "Spotify Wrapped" style year-in-review for your WhatsApp group chats**
