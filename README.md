@@ -1,4 +1,8 @@
-# WhatsApp Wrapped
+<div align="center">
+<img width="1200" height="475" alt="WhatsApp Wrapped Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="1200" alt="WhatsApp Wrapped Banner" src="docs/images/banner.png" />
+
+   # WhatsApp Wrapped
 
 **Generate a "Spotify Wrapped" style year-in-review for your WhatsApp group chats**
 
