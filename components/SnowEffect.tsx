@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
 export const SnowEffect: React.FC = () => {
-  const [flakes, setFlakes] = useState<Array<{
-    id: number;
-    left: number;
-    animationDuration: number;
-    animationDelay: number;
-    size: number;
-    opacity: number;
-  }>>([]);
+  const [flakes, setFlakes] = useState<
+    Array<{
+      id: number;
+      left: number;
+      animationDuration: number;
+      animationDelay: number;
+      size: number;
+      opacity: number;
+    }>
+  >([]);
 
   useEffect(() => {
     // Generate static flakes on mount
@@ -19,7 +21,7 @@ export const SnowEffect: React.FC = () => {
       animationDuration: Math.random() * 10 + 10, // 10-20s fall duration
       animationDelay: Math.random() * -20, // Start at random times
       size: Math.random() * 4 + 2, // 2-6px size
-      opacity: Math.random() * 0.4 + 0.1 // 0.1-0.5 opacity for subtle effect
+      opacity: Math.random() * 0.4 + 0.1, // 0.1-0.5 opacity for subtle effect
     }));
     setFlakes(newFlakes);
   }, []);
@@ -58,7 +60,7 @@ export const SnowEffect: React.FC = () => {
             opacity: flake.opacity,
             animation: `snowfall ${flake.animationDuration}s linear infinite`,
             animationDelay: `${flake.animationDelay}s`,
-            top: '-10px'
+            top: '-10px',
           }}
         />
       ))}

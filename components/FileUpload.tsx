@@ -32,7 +32,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
         resetModals();
         onFileUpload(file);
       } else {
-        alert("Please upload a .txt file");
+        alert('Please upload a .txt file');
       }
     },
     [onFileUpload, isLoading]
@@ -83,7 +83,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
       await fetch('/api/join-waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim() })
+        body: JSON.stringify({ email: email.trim() }),
       });
       setEmailSubmitted(true);
     } catch (error) {
@@ -128,22 +128,26 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
           onDragLeave={handleDragLeave}
           className={`
             relative rounded-2xl p-8 text-center transition-all duration-300 border-2 border-dashed
-            ${isLoading
-              ? 'border-white/10 bg-white/5 opacity-50 cursor-wait'
-              : isDragOver
-                ? 'border-purple-400 bg-purple-500/10 scale-[1.02]'
-                : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
+            ${
+              isLoading
+                ? 'border-white/10 bg-white/5 opacity-50 cursor-wait'
+                : isDragOver
+                  ? 'border-purple-400 bg-purple-500/10 scale-[1.02]'
+                  : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
             }
           `}
         >
           {/* Icon */}
-          <div className={`
+          <div
+            className={`
             w-16 h-16 mx-auto rounded-full flex items-center justify-center mb-5 transition-all
-            ${isDragOver
-              ? 'bg-purple-500 scale-110'
-              : 'bg-gradient-to-br from-purple-500 to-pink-500'
+            ${
+              isDragOver
+                ? 'bg-purple-500 scale-110'
+                : 'bg-gradient-to-br from-purple-500 to-pink-500'
             }
-          `}>
+          `}
+          >
             {isLoading ? (
               <div className="w-8 h-8 border-3 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
@@ -154,7 +158,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
           {/* Text */}
           <div className="space-y-2 mb-6">
             <h3 className="text-lg font-bold">
-              {isLoading ? 'Analyzing Chat...' : isDragOver ? 'Drop it here!' : 'Upload WhatsApp Chat'}
+              {isLoading
+                ? 'Analyzing Chat...'
+                : isDragOver
+                  ? 'Drop it here!'
+                  : 'Upload WhatsApp Chat'}
             </h3>
             <p className="text-sm text-white/50">
               Export chat (without media) and upload the .txt file
@@ -184,8 +192,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
               How to export WhatsApp chat?
             </summary>
             <div className="mt-3 text-xs text-white/50 text-left bg-white/5 rounded-xl p-4 space-y-2">
-              <p><strong>iOS:</strong> Open chat → Tap group name → Export Chat → Without Media</p>
-              <p><strong>Android:</strong> Open chat → Menu (⋮) → More → Export Chat → Without Media</p>
+              <p>
+                <strong>iOS:</strong> Open chat → Tap group name → Export Chat → Without Media
+              </p>
+              <p>
+                <strong>Android:</strong> Open chat → Menu (⋮) → More → Export Chat → Without Media
+              </p>
             </div>
           </details>
         </div>
@@ -222,10 +234,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
               {/* Warning text - compact */}
               <div className="text-xs text-white/60 leading-relaxed text-left space-y-2 bg-white/5 rounded-xl p-3">
                 <p>
-                  Your chat goes to <strong className="text-purple-300">Google's Gemini AI</strong> for analysis. I don't see or store anything.
+                  Your chat goes to <strong className="text-purple-300">Google's Gemini AI</strong>{' '}
+                  for analysis. I don't see or store anything.
                 </p>
                 <p className="text-white/40 italic">
-                  By continuing, your roast sessions join the great AI training dataset in the sky 🙏
+                  By continuing, your roast sessions join the great AI training dataset in the sky
+                  🙏
                 </p>
               </div>
 
@@ -376,10 +390,11 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload, isLoading 
                       setPasswordError(false);
                     }}
                     onKeyDown={handlePasswordKeyDown}
-                    className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/30 text-sm focus:outline-none transition-colors ${passwordError
-                      ? 'border-red-500 focus:border-red-500'
-                      : 'border-white/10 focus:border-purple-500'
-                      }`}
+                    className={`w-full pl-10 pr-4 py-3 bg-white/5 border rounded-xl text-white placeholder-white/30 text-sm focus:outline-none transition-colors ${
+                      passwordError
+                        ? 'border-red-500 focus:border-red-500'
+                        : 'border-white/10 focus:border-purple-500'
+                    }`}
                   />
                 </div>
 

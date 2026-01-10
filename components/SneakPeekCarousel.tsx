@@ -1,5 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Quote, Trophy, Zap, TrendingUp, MessageCircle, AlertTriangle, Crown, Calendar, Heart, Clock, Ghost, BatteryWarning, Search } from 'lucide-react';
+import {
+  Quote,
+  Trophy,
+  Zap,
+  TrendingUp,
+  MessageCircle,
+  AlertTriangle,
+  Crown,
+  Calendar,
+  Heart,
+  Clock,
+  Ghost,
+  BatteryWarning,
+  Search,
+} from 'lucide-react';
 
 // --- Satirical Content Data ---
 
@@ -7,78 +21,78 @@ const SATIRE_CONTENT = [
   // Awards & Personality
   {
     icon: Ghost,
-    title: "Award: The Ghost",
-    text: "Seen Feb 14th. Replied: Never.",
-    color: "text-purple-400",
-    bg: "bg-purple-900/40 border-purple-500/30"
+    title: 'Award: The Ghost',
+    text: 'Seen Feb 14th. Replied: Never.',
+    color: 'text-purple-400',
+    bg: 'bg-purple-900/40 border-purple-500/30',
   },
   {
     icon: Crown,
-    title: "Award: Chief Yapper",
-    text: "14,000 messages. 0 important info.",
-    color: "text-yellow-400",
-    bg: "bg-yellow-900/40 border-yellow-500/30"
+    title: 'Award: Chief Yapper',
+    text: '14,000 messages. 0 important info.',
+    color: 'text-yellow-400',
+    bg: 'bg-yellow-900/40 border-yellow-500/30',
   },
   {
     icon: BatteryWarning,
-    title: "Vibe: Low Battery",
+    title: 'Vibe: Low Battery',
     text: "Only replies with 'lol' or 'k'.",
-    color: "text-gray-400",
-    bg: "bg-gray-800/60 border-gray-500/30"
+    color: 'text-gray-400',
+    bg: 'bg-gray-800/60 border-gray-500/30',
   },
   {
     icon: AlertTriangle,
-    title: "Toxic Trait",
-    text: "Starts drama at 11:59 PM.",
-    color: "text-red-400",
-    bg: "bg-red-900/40 border-red-500/30"
+    title: 'Toxic Trait',
+    text: 'Starts drama at 11:59 PM.',
+    color: 'text-red-400',
+    bg: 'bg-red-900/40 border-red-500/30',
   },
 
   // Stats & Metrics
   {
     icon: Heart,
-    title: "Simp Metrics",
-    text: "Avg Reply: You (8s) vs Them (3 days).",
-    color: "text-pink-400",
-    bg: "bg-pink-900/40 border-pink-500/30"
+    title: 'Simp Metrics',
+    text: 'Avg Reply: You (8s) vs Them (3 days).',
+    color: 'text-pink-400',
+    bg: 'bg-pink-900/40 border-pink-500/30',
   },
   {
     icon: Clock,
-    title: "The Insomniac",
-    text: "Most active time: 4:12 AM.",
-    color: "text-indigo-400",
-    bg: "bg-indigo-900/40 border-indigo-500/30"
+    title: 'The Insomniac',
+    text: 'Most active time: 4:12 AM.',
+    color: 'text-indigo-400',
+    bg: 'bg-indigo-900/40 border-indigo-500/30',
   },
   {
     icon: TrendingUp,
-    title: "Data Hoarder",
-    text: "Sent 4,000 screenshots. 0 context.",
-    color: "text-green-400",
-    bg: "bg-green-900/40 border-green-500/30"
+    title: 'Data Hoarder',
+    text: 'Sent 4,000 screenshots. 0 context.',
+    color: 'text-green-400',
+    bg: 'bg-green-900/40 border-green-500/30',
   },
 
   // Quotes & Moments
   {
     icon: Quote,
-    title: "Top Lie",
+    title: 'Top Lie',
     text: "'I'm 5 mins away' (Narrator: He wasn't)",
-    color: "text-cyan-400",
-    bg: "bg-cyan-900/40 border-cyan-500/30"
+    color: 'text-cyan-400',
+    bg: 'bg-cyan-900/40 border-cyan-500/30',
   },
   {
     icon: Search,
-    title: "Search History",
+    title: 'Search History',
     text: "Top topic: 'Where are we eating?'",
-    color: "text-orange-400",
-    bg: "bg-orange-900/40 border-orange-500/30"
+    color: 'text-orange-400',
+    bg: 'bg-orange-900/40 border-orange-500/30',
   },
   {
     icon: Zap,
-    title: "The Incident",
-    text: "The argument over $2.50 on Aug 12th.",
-    color: "text-rose-400",
-    bg: "bg-rose-900/40 border-rose-500/30"
-  }
+    title: 'The Incident',
+    text: 'The argument over $2.50 on Aug 12th.',
+    color: 'text-rose-400',
+    bg: 'bg-rose-900/40 border-rose-500/30',
+  },
 ];
 
 // --- Utilities for Randomness ---
@@ -116,7 +130,7 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
     const isMobile = window.innerWidth < 768;
 
     let pos: WidgetStyle = {
-      transform: `rotate(${rotation}deg) scale(${scale})`
+      transform: `rotate(${rotation}deg) scale(${scale})`,
     };
 
     if (isMobile) {
@@ -132,12 +146,11 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
         const vOffset = randomInt(8, 18);
         pos.top = `${vOffset}%`;
 
-        // Randomize horizontal but keep clear of very center if possible, 
+        // Randomize horizontal but keep clear of very center if possible,
         // though with full width widgets on mobile, they just need to not overlap vertically.
         // Actually on mobile, we might center them horizontally or stagger slightly.
         if (quadrant === 'TL') pos.left = `${hOffset}%`;
         else pos.right = `${hOffset}%`;
-
       } else {
         // Bottom quadrants -> Bottom strip
         const vOffset = randomInt(8, 18);
@@ -174,7 +187,6 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
 
     // Initial start delay
     const startTimeout = setTimeout(() => {
-
       const cycle = () => {
         // 1. Prepare new content and position while invisible
         setContent(randomItem(SATIRE_CONTENT));
@@ -194,7 +206,6 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
       };
 
       cycle();
-
     }, delayMs);
 
     return () => {
@@ -214,16 +225,20 @@ const FloatingWidget: React.FC<FloatingWidgetProps> = ({ quadrant, delayMs }) =>
         // Add a slight translation when fading out to make it look like it's drifting away
         transform: visible
           ? `${style.transform} translateY(0px)`
-          : `${style.transform} translateY(-30px)`
+          : `${style.transform} translateY(-30px)`,
       }}
     >
-      <div className={`
+      <div
+        className={`
             w-[85vw] max-w-[300px] md:w-[320px] p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] backdrop-blur-xl border shadow-2xl
             flex flex-col gap-2 md:gap-3 transition-colors duration-500
             ${content.bg}
-        `}>
+        `}
+      >
         <div className="flex items-start gap-3">
-          <div className={`p-2 md:p-2.5 rounded-xl bg-black/40 ${content.color} shrink-0 shadow-inner mt-1`}>
+          <div
+            className={`p-2 md:p-2.5 rounded-xl bg-black/40 ${content.color} shrink-0 shadow-inner mt-1`}
+          >
             <Icon size={18} className="md:w-[22px] md:h-[22px]" strokeWidth={2.5} />
           </div>
           <h3 className="font-display font-bold text-base md:text-lg text-white leading-tight drop-shadow-md pt-1">
@@ -253,7 +268,6 @@ export const SneakPeekCarousel: React.FC = () => {
       <FloatingWidget quadrant="TR" delayMs={2000} />
       <FloatingWidget quadrant="BL" delayMs={1200} />
       <FloatingWidget quadrant="BR" delayMs={3500} />
-
     </div>
   );
 };

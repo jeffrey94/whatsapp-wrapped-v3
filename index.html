@@ -1,304 +1,309 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0a0a0a" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>WhatsApp Wrapped 2025</title>
-  <meta name="description"
-    content="Rediscover your group chat's best moments of 2025. Upload your WhatsApp export and get a beautiful wrapped experience." />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
-    rel="stylesheet">
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      box-sizing: border-box;
-    }
-
-    html,
-    body,
-    #root {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      overscroll-behavior: none;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background-color: #0a0a0a;
-      color: #ffffff;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    .font-display {
-      font-family: 'Space Grotesk', sans-serif;
-    }
-
-    /* Hide scrollbar for clean story view */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    /* Smooth scroll container */
-    .scroll-snap-container {
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-    }
-
-    .scroll-snap-item {
-      scroll-snap-align: start;
-      scroll-snap-stop: always;
-    }
-
-    /* Animation keyframes */
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translateY(0px);
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>WhatsApp Wrapped 2025</title>
+    <meta
+      name="description"
+      content="Rediscover your group chat's best moments of 2025. Upload your WhatsApp export and get a beautiful wrapped experience."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
       }
 
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: -200% 0;
-      }
-
-      100% {
-        background-position: 200% 0;
-      }
-    }
-
-    @keyframes pulse-glow {
-
-      0%,
-      100% {
-        opacity: 0.4;
-        transform: scale(1);
+      html,
+      body,
+      #root {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        overscroll-behavior: none;
       }
 
-      50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-      }
-    }
-
-    @keyframes slide-up {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes fade-in {
-      from {
-        opacity: 0;
+      body {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background-color: #0a0a0a;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
-      to {
-        opacity: 1;
-      }
-    }
-
-    @keyframes scale-in {
-      from {
-        opacity: 0;
-        transform: scale(0.9);
+      .font-display {
+        font-family: 'Space Grotesk', sans-serif;
       }
 
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    @keyframes count-up {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
+      /* Hide scrollbar for clean story view */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
       }
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .animate-float {
-      animation: float 3s ease-in-out infinite;
-    }
-
-    .animate-shimmer {
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      background-size: 200% 100%;
-      animation: shimmer 2s infinite;
-    }
-
-    .animate-pulse-glow {
-      animation: pulse-glow 2s ease-in-out infinite;
-    }
-
-    .animate-slide-up {
-      animation: slide-up 0.6s ease-out forwards;
-    }
-
-    .animate-fade-in {
-      animation: fade-in 0.5s ease-out forwards;
-    }
-
-    .animate-scale-in {
-      animation: scale-in 0.4s ease-out forwards;
-    }
-
-    .animate-count-up {
-      animation: count-up 0.8s ease-out forwards;
-    }
-
-    /* Marquee styles for seamless infinite scroll */
-    .marquee-track {
-      display: flex;
-      width: max-content;
-      animation: marquee 29s linear infinite;
-    }
-
-    .marquee-track:hover {
-      animation-play-state: paused;
-    }
-
-    .marquee-content {
-      display: flex;
-      gap: 1rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-
-    @keyframes marquee {
-      0% {
-        transform: translateX(0%);
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
 
-      100% {
-        transform: translateX(-50%);
-      }
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(-20px);
-        opacity: 0;
+      /* Smooth scroll container */
+      .scroll-snap-container {
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
       }
 
-      10% {
-        opacity: 0.3;
+      .scroll-snap-item {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
       }
 
-      90% {
-        opacity: 0.3;
+      /* Animation keyframes */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+
+        50% {
+          transform: translateY(-10px);
+        }
       }
 
-      100% {
-        transform: translateY(100vh);
-        opacity: 0;
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+
+        100% {
+          background-position: 200% 0;
+        }
       }
-    }
 
-    .animate-fall {
-      animation: fall 4s linear infinite;
-    }
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          opacity: 0.4;
+          transform: scale(1);
+        }
 
-    /* Staggered animations */
-    .stagger-1 {
-      animation-delay: 0.1s;
-    }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.05);
+        }
+      }
 
-    .stagger-2 {
-      animation-delay: 0.2s;
-    }
+      @keyframes slide-up {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
 
-    .stagger-3 {
-      animation-delay: 0.3s;
-    }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .stagger-4 {
-      animation-delay: 0.4s;
-    }
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+        }
 
-    .stagger-5 {
-      animation-delay: 0.5s;
-    }
+        to {
+          opacity: 1;
+        }
+      }
 
-    /* Glass effect */
-    .glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
+      @keyframes scale-in {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
 
-    .glass-dark {
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
 
-    /* Gradient text */
-    .gradient-text {
-      background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+      @keyframes count-up {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
 
-    /* Safe area padding for notched phones */
-    .safe-top {
-      padding-top: env(safe-area-inset-top, 0px);
-    }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    .safe-bottom {
-      padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
+      .animate-float {
+        animation: float 3s ease-in-out infinite;
+      }
 
-    /* Touch-friendly button */
-    .touch-btn {
-      min-height: 48px;
-      min-width: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
-  <script type="module" src="/index.tsx"></script>
-</head>
+      .animate-shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+      }
 
-<body>
-  <div id="root"></div>
-</body>
+      .animate-pulse-glow {
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
 
+      .animate-slide-up {
+        animation: slide-up 0.6s ease-out forwards;
+      }
+
+      .animate-fade-in {
+        animation: fade-in 0.5s ease-out forwards;
+      }
+
+      .animate-scale-in {
+        animation: scale-in 0.4s ease-out forwards;
+      }
+
+      .animate-count-up {
+        animation: count-up 0.8s ease-out forwards;
+      }
+
+      /* Marquee styles for seamless infinite scroll */
+      .marquee-track {
+        display: flex;
+        width: max-content;
+        animation: marquee 29s linear infinite;
+      }
+
+      .marquee-track:hover {
+        animation-play-state: paused;
+      }
+
+      .marquee-content {
+        display: flex;
+        gap: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+
+        10% {
+          opacity: 0.3;
+        }
+
+        90% {
+          opacity: 0.3;
+        }
+
+        100% {
+          transform: translateY(100vh);
+          opacity: 0;
+        }
+      }
+
+      .animate-fall {
+        animation: fall 4s linear infinite;
+      }
+
+      /* Staggered animations */
+      .stagger-1 {
+        animation-delay: 0.1s;
+      }
+
+      .stagger-2 {
+        animation-delay: 0.2s;
+      }
+
+      .stagger-3 {
+        animation-delay: 0.3s;
+      }
+
+      .stagger-4 {
+        animation-delay: 0.4s;
+      }
+
+      .stagger-5 {
+        animation-delay: 0.5s;
+      }
+
+      /* Glass effect */
+      .glass {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .glass-dark {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Gradient text */
+      .gradient-text {
+        background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Safe area padding for notched phones */
+      .safe-top {
+        padding-top: env(safe-area-inset-top, 0px);
+      }
+
+      .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+
+      /* Touch-friendly button */
+      .touch-btn {
+        min-height: 48px;
+        min-width: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+    <script type="module" src="/index.tsx"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
