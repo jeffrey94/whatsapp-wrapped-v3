@@ -1,4 +1,4 @@
-\# WhatsApp Wrapped
+# WhatsApp Wrapped
 
 **Generate a "Spotify Wrapped" style year-in-review for your WhatsApp group chats**
 
