@@ -248,10 +248,7 @@ export const generateAIInsights = async (
             console.log('JSON repair successful!');
           } catch (repairError) {
             console.error('JSON repair failed:', repairError);
-            console.log(
-              'Raw response text (last 500 chars):',
-              response.text.slice(-500)
-            );
+            console.log('Raw response text (last 500 chars):', response.text.slice(-500));
             throw new Error('Invalid JSON response from AI');
           }
         }
