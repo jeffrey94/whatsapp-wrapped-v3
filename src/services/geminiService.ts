@@ -2,6 +2,49 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { ChatAnalytics, Message, AIGeneratedContent } from '../types';
 import { apiKeyManager } from '../utils/apiKeyManager';
 
+/**
+ * Attempts to repair truncated JSON by closing unclosed strings, arrays, and objects.
+ * This is a best-effort fallback when the AI response gets cut off.
+ */
+const repairTruncatedJson = (jsonStr: string): string => {
+  let repaired = jsonStr.trim();
+
+  // If it ends mid-string (no closing quote), close it
+  const lastQuoteIndex = repaired.lastIndexOf('"');
+  const afterLastQuote = repaired.slice(lastQuoteIndex + 1);
+
+  // Check if we're inside an unclosed string (odd number of unescaped quotes after last structural char)
+  if (lastQuoteIndex > 0 && !/["\]}]/.test(afterLastQuote.trim())) {
+    // We're likely in an unclosed string, close it
+    repaired += '"';
+  }
+
+  // Count open brackets/braces to determine what needs closing
+  let openBraces = 0;
+  let openBrackets = 0;
+  let inString = false;
+  let prevChar = '';
+
+  for (const char of repaired) {
+    if (char === '"' && prevChar !== '\\') {
+      inString = !inString;
+    } else if (!inString) {
+      if (char === '{') openBraces++;
+      else if (char === '}') openBraces--;
+      else if (char === '[') openBrackets++;
+      else if (char === ']') openBrackets--;
+    }
+    prevChar = char;
+  }
+
+  // Close any remaining open structures
+  // First close arrays, then objects (reverse order of typical nesting)
+  repaired += ']'.repeat(Math.max(0, openBrackets));
+  repaired += '}'.repeat(Math.max(0, openBraces));
+
+  return repaired;
+};
+
 // Get API key: prioritize user-provided key from localStorage, fallback to env variable
 const getApiKey = (): string | null => {
   // Priority 1: User-provided key from localStorage
@@ -75,19 +118,21 @@ export const generateAIInsights = async (
 
   const prompt = `
     Analyze this WhatsApp group chat timeline from 2025.
-    
+
+    CRITICAL: Your entire JSON response must be under 1000 words total. Be concise and prioritize quality over quantity.
+
     Group Stats:
     - Total Messages: ${analytics.totalMessages}
     - Top Participants: ${JSON.stringify(topParticipants)}
     - Most frequent raw words detected (may include noise): ${rawFreqWords}
     - Participants Legend: ${participantLegend}
-    
+
     Chat Timeline:
     ${timeline}
-    
+
     Task (Provide JSON output):
-    1. "Group Personality": A creative 'Vibe' description (2 sentences) and a list of 'Core Values' (e.g. "Humor, Tech Support").
-    2. "Awards": Assign a creative "Badge" to 3-5 top members. 
+    1. "Group Personality": A creative 'Vibe' description (2 sentences) and a list of 'Core Values' as a comma-separated string (e.g. "Humor, Tech Support, Memes").
+    2. "Awards": Assign a creative "Badge" to 3-5 top members.
     3. "Moments": Identify 3 distinct memorable events, arguments, or inside jokes. Crucial: Ensure these moments involve *different* key participants to maximize coverage.
     4. "Topics": Identify 4-5 main discussion themes (e.g. "Weekend Plans", "Politics", "Roasting X") with a frequency label (High/Medium) and the name of the participant who most leads/initiates it ("ledBy").
     5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb").
@@ -115,6 +160,7 @@ export const generateAIInsights = async (
         contents: prompt,
         config: {
           responseMimeType: 'application/json',
+          maxOutputTokens: 8192, // Explicit limit to prevent unknown truncation
           responseSchema: {
             type: Type.OBJECT,
             properties: {
@@ -192,9 +238,19 @@ export const generateAIInsights = async (
         try {
           parsed = JSON.parse(response.text) as AIGeneratedContent;
         } catch (parseError) {
-          console.error('JSON parse error - response may be truncated:', parseError);
-          console.log('Raw response text:', response.text); // Debug: Inspect the raw output
-          throw new Error('Invalid JSON response from AI');
+          console.warn('JSON parse error - attempting repair:', parseError);
+
+          // Try to repair truncated JSON
+          try {
+            const repairedJson = repairTruncatedJson(response.text);
+            console.log('Attempting to parse repaired JSON...');
+            parsed = JSON.parse(repairedJson) as AIGeneratedContent;
+            console.log('JSON repair successful!');
+          } catch (repairError) {
+            console.error('JSON repair failed:', repairError);
+            console.log('Raw response text (last 500 chars):', response.text.slice(-500));
+            throw new Error('Invalid JSON response from AI');
+          }
         }
 
         // Validate required fields exist
