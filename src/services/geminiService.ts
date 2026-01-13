@@ -119,8 +119,6 @@ export const generateAIInsights = async (
   const prompt = `
     Analyze this WhatsApp group chat timeline from 2025.
 
-    CRITICAL: Your entire JSON response must be under 1000 words total. Be concise and prioritize quality over quantity.
-
     Group Stats:
     - Total Messages: ${analytics.totalMessages}
     - Top Participants: ${JSON.stringify(topParticipants)}
@@ -131,16 +129,18 @@ export const generateAIInsights = async (
     ${timeline}
 
     Task (Provide JSON output):
-    1. "Group Personality": A creative 'Vibe' description (2 sentences) and a list of 'Core Values' as a comma-separated string (e.g. "Humor, Tech Support, Memes").
-    2. "Awards": Assign a creative "Badge" to 3-5 top members.
-    3. "Moments": Identify 3 distinct memorable events, arguments, or inside jokes. Crucial: Ensure these moments involve *different* key participants to maximize coverage.
-    4. "Topics": Identify 4-5 main discussion themes (e.g. "Weekend Plans", "Politics", "Roasting X") with a frequency label (High/Medium) and the name of the participant who most leads/initiates it ("ledBy").
-    5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb").
+    IMPORTANT: Keep ALL text fields concise. Do not ramble or exceed the specified lengths.
+
+    1. "Group Personality": A creative 'Vibe' description (STRICTLY 2 sentences max, under 100 words total) and a list of 'Core Values' as a comma-separated string (e.g. "Humor, Tech Support, Memes").
+    2. "Awards": Assign a creative "Badge" to 3-5 top members. Keep badgeDescription under 20 words each.
+    3. "Moments": Identify 3 distinct memorable events, arguments, or inside jokes. Crucial: Ensure these moments involve *different* key participants to maximize coverage. Keep each description under 50 words.
+    4. "Topics": Identify 4-5 main discussion themes (e.g. "Weekend Plans", "Politics", "Roasting X") with a frequency label (High/Medium) and the name of the participant who most leads/initiates it ("ledBy"). Keep descriptions under 30 words.
+    5. "Predictions": 3 fun, pattern-based predictions for next year (e.g. "X will finally buy a new phone", "Activity will drop in Feb"). Max 15 words each.
     6. "Quotes": Extract one short, distinct "signature quote" (max 10 words) for each of the top 5 participants listed in Group Stats. It should be something they actually said or characteristic of them.
     7. "Word Cloud": Curate a list of 30-40 specific words or short phrases that represent this group's unique vocabulary, slang, inside jokes, or recurrent topics. Use the "Raw frequent words" list as a hint but prioritise finding slang/names in the timeline. Filter out common English stop words (like 'the', 'is', 'message', 'omitted') and generic verbs/adverbs. Returns strings only.
-    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences) for the end of the Wrapped presentation. It should feel like a natural ending that acknowledges the year of chatting. Do NOT include emojis. Examples: "See you in 2026 — may your notifications be fewer and your memes be danker." or "Another year of questionable life advice and even more questionable memes. You survived."
+    8. "Sign Off Message": Write a single, punchy, friendly/humorous/satirical goodbye message (1-2 sentences, max 30 words) for the end of the Wrapped presentation.
 
-    Output strictly in JSON matching the schema.
+    Output strictly in JSON matching the schema. Be concise - quality over quantity.
   `;
 
   const MAX_RETRIES = 3;
@@ -248,7 +248,10 @@ export const generateAIInsights = async (
             console.log('JSON repair successful!');
           } catch (repairError) {
             console.error('JSON repair failed:', repairError);
-            console.log('Raw response text (last 500 chars):', response.text.slice(-500));
+            console.log(
+              'Raw response text (last 500 chars):',
+              response.text.slice(-500)
+            );
             throw new Error('Invalid JSON response from AI');
           }
         }
